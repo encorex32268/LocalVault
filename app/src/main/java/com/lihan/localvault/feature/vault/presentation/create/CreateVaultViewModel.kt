@@ -14,7 +14,6 @@ import com.lihan.localvault.core.domain.VaultField
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.feature.vault.domain.VaultRepository
-import com.lihan.localvault.feature.vault.presentation.mapper.toDomain
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import kotlinx.coroutines.channels.Channel
@@ -34,7 +33,11 @@ class CreateVaultViewModel(
 
     private val _state = MutableStateFlow(
         CreateVaultState(
-            fields = defaultFieldsForCategory(VaultCategory.ACCOUNT)
+            category = VaultCategory.CUSTOM,
+            fields = listOf(
+                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
+                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
+            )
         )
     )
     val state = _state.stateIn(
@@ -63,14 +66,7 @@ class CreateVaultViewModel(
                 _state.update { it.copy(color = action.color) }
             }
             is CreateVaultAction.OnSelectCategory -> {
-                if (_state.value.category != action.category) {
-                    _state.update {
-                        it.copy(
-                            category = action.category,
-                            fields = defaultFieldsForCategory(action.category)
-                        )
-                    }
-                }
+                _state.update { it.copy(category = action.category) }
             }
             is CreateVaultAction.OnOpenAddFieldMenu -> {
                 _state.update { it.copy(isAddFieldMenuOpen = true) }
@@ -113,28 +109,19 @@ class CreateVaultViewModel(
                     )
                 }
             }
+            is CreateVaultAction.OnFieldLabelChange -> {
+                _state.update {
+                    it.copy(
+                        fields = it.fields.map { field ->
+                            if (field.id == action.fieldId) {
+                                field.copy(label = action.newLabel)
+                            } else field
+                        }
+                    )
+                }
+            }
             is CreateVaultAction.OnSaveClick -> saveVault()
             else -> Unit
-        }
-    }
-
-    private fun defaultFieldsForCategory(category: VaultCategory): List<VaultFieldUi> {
-        return when (category) {
-            VaultCategory.ACCOUNT -> listOf(
-                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
-                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
-            )
-            VaultCategory.ADDRESS -> listOf(
-                VaultFieldUi(type = FieldType.TEXT, label = "ZipCode"),
-                VaultFieldUi(type = FieldType.TEXT, label = "Address")
-            )
-            VaultCategory.NOTE -> listOf(
-                VaultFieldUi(type = FieldType.NOTE, label = "Note")
-            )
-            VaultCategory.CUSTOM -> listOf(
-                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
-                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
-            )
         }
     }
 
@@ -166,7 +153,7 @@ class CreateVaultViewModel(
     private fun saveVault() {
         val currentState = _state.value
         val titleText = currentState.vaultTitle.text.trim().toString().ifBlank {
-            currentState.category.name
+            "Vault"
         }
 
         val domainContent = VaultContent(

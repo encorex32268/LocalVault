@@ -20,4 +20,5 @@ sealed interface CreateVaultAction {
     data class OnAddField(val type: FieldType) : CreateVaultAction
     data class OnRemoveField(val fieldId: String) : CreateVaultAction
     data class OnTogglePasswordVisibility(val fieldId: String) : CreateVaultAction
+    data class OnFieldLabelChange(val fieldId: String, val newLabel: String) : CreateVaultAction
 }

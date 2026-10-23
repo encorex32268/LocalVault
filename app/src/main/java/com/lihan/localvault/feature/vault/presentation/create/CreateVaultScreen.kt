@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -51,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -63,12 +65,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
-import com.lihan.localvault.core.domain.VaultCategory
-import com.lihan.localvault.core.presentation.ui.theme.Background
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.Placeholder
+import com.lihan.localvault.core.presentation.ui.theme.Primary
 import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
@@ -233,36 +234,6 @@ private fun CreateVaultScreen(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                VaultCategory.entries.forEach { category ->
-                    val isSelected = state.category == category
-                    OutlinedButton(
-                        onClick = {
-                            onAction(CreateVaultAction.OnSelectCategory(category))
-                        },
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (isSelected) cardBackgroundColor else Color.Transparent,
-                            contentColor = if (isSelected) {
-                                state.color
-                            } else {
-                                Background
-                            }
-                        )
-                    ) {
-                        Text(
-                            text = category.name,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-                    }
-                }
-            }
-
             Text(
                 text = stringResource(R.string.title),
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -326,123 +297,145 @@ private fun CreateVaultScreen(
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        BasicTextField(
+                            value = field.label,
+                            onValueChange = { newLabel ->
+                                onAction(CreateVaultAction.OnFieldLabelChange(field.id, newLabel))
+                            },
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = OnBackground
+                            ),
+                            cursorBrush = SolidColor(Primary),
+                            singleLine = true,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        )
+                        Icon(
+                            modifier = Modifier.size(13.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.edit),
+                            contentDescription = null,
+                            tint = Placeholder.copy(alpha = 0.5f)
+                        )
+                    }
+
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = field.label,
-                            fontWeight = FontWeight.SemiBold,
-                            color = OnBackground,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                        Box(modifier = Modifier.weight(1f)) {
+                            when (field.type) {
+                                FieldType.PASSWORD -> {
+                                    VaultTextField(
+                                        textFieldState = field.state,
+                                        placeholder = stringResource(R.string.password_placeholder),
+                                        outputTransformation = if (field.isPasswordVisible) null else PasswordOutputTransformation(),
+                                        lineLimits = TextFieldLineLimits.SingleLine,
+                                        trailingIcon = {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            ) {
+                                                IconButton(
+                                                    modifier = Modifier.size(32.dp),
+                                                    onClick = {
+                                                        onAction(CreateVaultAction.OnTogglePasswordVisibility(field.id))
+                                                    },
+                                                    shape = CircleShape
+                                                ) {
+                                                    Icon(
+                                                        modifier = Modifier.size(22.dp),
+                                                        imageVector = if (field.isPasswordVisible) {
+                                                            ImageVector.vectorResource(R.drawable.eye)
+                                                        } else {
+                                                            ImageVector.vectorResource(R.drawable.eye_off)
+                                                        },
+                                                        contentDescription = null,
+                                                        tint = OnBackground
+                                                    )
+                                                }
+                                                IconButton(
+                                                    modifier = Modifier.size(32.dp),
+                                                    onClick = {
+                                                        onAction(CreateVaultAction.OnPasteField(field.id))
+                                                    },
+                                                    shape = CircleShape
+                                                ) {
+                                                    Icon(
+                                                        modifier = Modifier.size(22.dp),
+                                                        imageVector = ImageVector.vectorResource(R.drawable.paste),
+                                                        contentDescription = null,
+                                                        tint = OnBackground
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+                                FieldType.NOTE -> {
+                                    VaultTextField(
+                                        textFieldState = field.state,
+                                        placeholder = stringResource(R.string.note_placeholder),
+                                        lineLimits = TextFieldLineLimits.Default,
+                                        trailingIcon = {
+                                            IconButton(
+                                                modifier = Modifier.size(32.dp),
+                                                onClick = {
+                                                    onAction(CreateVaultAction.OnPasteField(field.id))
+                                                },
+                                                shape = CircleShape
+                                            ) {
+                                                Icon(
+                                                    modifier = Modifier.size(22.dp),
+                                                    imageVector = ImageVector.vectorResource(R.drawable.paste),
+                                                    contentDescription = null,
+                                                    tint = OnBackground
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                                FieldType.TEXT -> {
+                                    VaultTextField(
+                                        textFieldState = field.state,
+                                        placeholder = field.label.lowercase(),
+                                        lineLimits = TextFieldLineLimits.SingleLine,
+                                        trailingIcon = {
+                                            IconButton(
+                                                modifier = Modifier.size(32.dp),
+                                                onClick = {
+                                                    onAction(CreateVaultAction.OnPasteField(field.id))
+                                                },
+                                                shape = CircleShape
+                                            ) {
+                                                Icon(
+                                                    modifier = Modifier.size(22.dp),
+                                                    imageVector = ImageVector.vectorResource(R.drawable.paste),
+                                                    contentDescription = null,
+                                                    tint = OnBackground
+                                                )
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
                         IconButton(
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier.size(36.dp),
                             onClick = {
                                 onAction(CreateVaultAction.OnRemoveField(field.id))
-                            }
+                            },
+                            shape = CircleShape
                         ) {
                             Icon(
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(20.dp),
                                 imageVector = ImageVector.vectorResource(R.drawable.trash),
                                 contentDescription = stringResource(R.string.delete),
                                 tint = Placeholder
-                            )
-                        }
-                    }
-
-                    when (field.type) {
-                        FieldType.PASSWORD -> {
-                            VaultTextField(
-                                textFieldState = field.state,
-                                placeholder = stringResource(R.string.password_placeholder),
-                                outputTransformation = if (field.isPasswordVisible) null else PasswordOutputTransformation(),
-                                lineLimits = TextFieldLineLimits.SingleLine,
-                                trailingIcon = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                    ) {
-                                        IconButton(
-                                            modifier = Modifier.size(32.dp),
-                                            onClick = {
-                                                onAction(CreateVaultAction.OnTogglePasswordVisibility(field.id))
-                                            },
-                                            shape = CircleShape
-                                        ) {
-                                            Icon(
-                                                modifier = Modifier.size(22.dp),
-                                                imageVector = if (field.isPasswordVisible) {
-                                                    ImageVector.vectorResource(R.drawable.eye)
-                                                } else {
-                                                    ImageVector.vectorResource(R.drawable.eye_off)
-                                                },
-                                                contentDescription = null,
-                                                tint = OnBackground
-                                            )
-                                        }
-                                        IconButton(
-                                            modifier = Modifier.size(32.dp),
-                                            onClick = {
-                                                onAction(CreateVaultAction.OnPasteField(field.id))
-                                            },
-                                            shape = CircleShape
-                                        ) {
-                                            Icon(
-                                                modifier = Modifier.size(22.dp),
-                                                imageVector = ImageVector.vectorResource(R.drawable.paste),
-                                                contentDescription = null,
-                                                tint = OnBackground
-                                            )
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                        FieldType.NOTE -> {
-                            VaultTextField(
-                                textFieldState = field.state,
-                                placeholder = stringResource(R.string.note_placeholder),
-                                lineLimits = TextFieldLineLimits.Default,
-                                trailingIcon = {
-                                    IconButton(
-                                        modifier = Modifier.size(32.dp),
-                                        onClick = {
-                                            onAction(CreateVaultAction.OnPasteField(field.id))
-                                        },
-                                        shape = CircleShape
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.size(22.dp),
-                                            imageVector = ImageVector.vectorResource(R.drawable.paste),
-                                            contentDescription = null,
-                                            tint = OnBackground
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                        FieldType.TEXT -> {
-                            VaultTextField(
-                                textFieldState = field.state,
-                                placeholder = field.label.lowercase(),
-                                lineLimits = TextFieldLineLimits.SingleLine,
-                                trailingIcon = {
-                                    IconButton(
-                                        modifier = Modifier.size(32.dp),
-                                        onClick = {
-                                            onAction(CreateVaultAction.OnPasteField(field.id))
-                                        },
-                                        shape = CircleShape
-                                    ) {
-                                        Icon(
-                                            modifier = Modifier.size(22.dp),
-                                            imageVector = ImageVector.vectorResource(R.drawable.paste),
-                                            contentDescription = null,
-                                            tint = OnBackground
-                                        )
-                                    }
-                                }
                             )
                         }
                     }
@@ -509,7 +502,7 @@ private fun CreateVaultScreen(
 
                 AddFieldOptionRow(
                     iconRes = R.drawable.user,
-                    title = stringResource(R.string.account),
+                    title = stringResource(R.string.single_line_input),
                     description = stringResource(R.string.add_field_text_desc),
                     tintColor = state.color,
                     onClick = {
@@ -519,7 +512,7 @@ private fun CreateVaultScreen(
 
                 AddFieldOptionRow(
                     iconRes = R.drawable.lock_keyhole,
-                    title = stringResource(R.string.password),
+                    title = stringResource(R.string.password_input),
                     description = stringResource(R.string.add_field_password_desc),
                     tintColor = state.color,
                     onClick = {
@@ -529,7 +522,7 @@ private fun CreateVaultScreen(
 
                 AddFieldOptionRow(
                     iconRes = R.drawable.edit,
-                    title = stringResource(R.string.note),
+                    title = stringResource(R.string.multiline_input),
                     description = stringResource(R.string.add_field_note_desc),
                     tintColor = state.color,
                     onClick = {
