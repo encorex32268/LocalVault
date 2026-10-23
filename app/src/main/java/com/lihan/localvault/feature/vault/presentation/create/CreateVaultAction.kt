@@ -1,8 +1,8 @@
 package com.lihan.localvault.feature.vault.presentation.create
 
 import androidx.compose.ui.graphics.Color
+import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
-import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.create.VaultFieldType
 
 sealed interface CreateVaultAction {
     data class OnInit(val vaultId: Long? = null) : CreateVaultAction
@@ -14,6 +14,10 @@ sealed interface CreateVaultAction {
     data class OnSelectColor(val color: Color) : CreateVaultAction
     data class OnSelectCategory(val category: VaultCategory) : CreateVaultAction
     data object OnPasteTitle : CreateVaultAction
-    data class OnPasteField(val fieldType: VaultFieldType) : CreateVaultAction
+    data class OnPasteField(val fieldId: String) : CreateVaultAction
+    data object OnOpenAddFieldMenu : CreateVaultAction
+    data object OnDismissAddFieldMenu : CreateVaultAction
+    data class OnAddField(val type: FieldType) : CreateVaultAction
+    data class OnRemoveField(val fieldId: String) : CreateVaultAction
+    data class OnTogglePasswordVisibility(val fieldId: String) : CreateVaultAction
 }
-

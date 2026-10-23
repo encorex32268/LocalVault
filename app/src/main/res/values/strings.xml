@@ -21,4 +21,9 @@
     <string name="cancel">Cancel</string>
     <string name="switch_to_light_mode">Switch to light theme</string>
     <string name="switch_to_dark_mode">Switch to dark theme</string>
+    <string name="add_field">Add Field</string>
+    <string name="add_field_text_desc">Username, Email, Text</string>
+    <string name="add_field_password_desc">Concealed password, PIN</string>
+    <string name="add_field_note_desc">Multiline text, content</string>
+    <string name="delete">Delete</string>
 </resources>

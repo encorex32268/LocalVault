@@ -6,19 +6,20 @@ import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.graphics.toColorLong
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
+import com.lihan.localvault.core.domain.VaultField
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toDomain
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
-import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -31,7 +32,11 @@ class CreateVaultViewModel(
     private val _events = Channel<CreateVaultEvent>()
     val events = _events.receiveAsFlow()
 
-    private val _state = MutableStateFlow(CreateVaultState())
+    private val _state = MutableStateFlow(
+        CreateVaultState(
+            fields = defaultFieldsForCategory(VaultCategory.ACCOUNT)
+        )
+    )
     val state = _state.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000L),
@@ -59,29 +64,77 @@ class CreateVaultViewModel(
             }
             is CreateVaultAction.OnSelectCategory -> {
                 if (_state.value.category != action.category) {
-                    val newContent = when (action.category) {
-                        VaultCategory.ACCOUNT -> VaultContentUi.Account(
-                            accountState = TextFieldState(),
-                            passwordState = TextFieldState()
-                        )
-                        VaultCategory.ADDRESS -> VaultContentUi.Address(
-                            zipCodeState = TextFieldState(),
-                            addressState = TextFieldState()
-                        )
-                        VaultCategory.NOTE -> VaultContentUi.Note(
-                            noteState = TextFieldState()
-                        )
-                    }
                     _state.update {
                         it.copy(
                             category = action.category,
-                            content = newContent
+                            fields = defaultFieldsForCategory(action.category)
                         )
                     }
                 }
             }
+            is CreateVaultAction.OnOpenAddFieldMenu -> {
+                _state.update { it.copy(isAddFieldMenuOpen = true) }
+            }
+            is CreateVaultAction.OnDismissAddFieldMenu -> {
+                _state.update { it.copy(isAddFieldMenuOpen = false) }
+            }
+            is CreateVaultAction.OnAddField -> {
+                val defaultLabel = when (action.type) {
+                    FieldType.TEXT -> "Account"
+                    FieldType.PASSWORD -> "Password"
+                    FieldType.NOTE -> "Note"
+                }
+                val count = _state.value.fields.count { it.type == action.type }
+                val label = if (count == 0) defaultLabel else "$defaultLabel ${count + 1}"
+                val newField = VaultFieldUi(
+                    type = action.type,
+                    label = label
+                )
+                _state.update {
+                    it.copy(
+                        fields = it.fields + newField,
+                        isAddFieldMenuOpen = false
+                    )
+                }
+            }
+            is CreateVaultAction.OnRemoveField -> {
+                _state.update {
+                    it.copy(fields = it.fields.filterNot { field -> field.id == action.fieldId })
+                }
+            }
+            is CreateVaultAction.OnTogglePasswordVisibility -> {
+                _state.update {
+                    it.copy(
+                        fields = it.fields.map { field ->
+                            if (field.id == action.fieldId) {
+                                field.copy(isPasswordVisible = !field.isPasswordVisible)
+                            } else field
+                        }
+                    )
+                }
+            }
             is CreateVaultAction.OnSaveClick -> saveVault()
             else -> Unit
+        }
+    }
+
+    private fun defaultFieldsForCategory(category: VaultCategory): List<VaultFieldUi> {
+        return when (category) {
+            VaultCategory.ACCOUNT -> listOf(
+                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
+                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
+            )
+            VaultCategory.ADDRESS -> listOf(
+                VaultFieldUi(type = FieldType.TEXT, label = "ZipCode"),
+                VaultFieldUi(type = FieldType.TEXT, label = "Address")
+            )
+            VaultCategory.NOTE -> listOf(
+                VaultFieldUi(type = FieldType.NOTE, label = "Note")
+            )
+            VaultCategory.CUSTOM -> listOf(
+                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
+                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
+            )
         }
     }
 
@@ -101,7 +154,7 @@ class CreateVaultViewModel(
                         category = vault.category,
                         iconIndex = vault.iconIndex,
                         vaultTitle = TextFieldState(vault.title),
-                        content = content.toUi()
+                        fields = content.toUi().fields
                     )
                 }
             } else {
@@ -116,11 +169,16 @@ class CreateVaultViewModel(
             currentState.category.name
         }
 
-        val domainContent = currentState.content?.toDomain() ?: when (currentState.category) {
-            VaultCategory.ACCOUNT -> VaultContent.Account("", "")
-            VaultCategory.ADDRESS -> VaultContent.Address("", "")
-            VaultCategory.NOTE -> VaultContent.Note("")
-        }
+        val domainContent = VaultContent(
+            fields = currentState.fields.map { fieldUi ->
+                VaultField(
+                    id = fieldUi.id,
+                    type = fieldUi.type,
+                    label = fieldUi.label,
+                    value = fieldUi.state.text.toString()
+                )
+            }
+        )
 
         val vault = Vault(
             id = currentState.vaultId ?: 0L,
@@ -144,4 +202,3 @@ class CreateVaultViewModel(
         }
     }
 }
-

@@ -5,22 +5,19 @@ import androidx.compose.ui.graphics.Color
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
-import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 
 data class CreateVaultState(
     val vaultId: Long? = null,
     val isLoading: Boolean = false,
     val vaultTitle: TextFieldState = TextFieldState(),
     val category: VaultCategory = VaultCategory.ACCOUNT,
-    val content: VaultContentUi = VaultContentUi.Account(
-        accountState = TextFieldState(),
-        passwordState = TextFieldState()
-    ),
+    val fields: List<VaultFieldUi> = emptyList(),
     val color: Color = VaultColors.first(),
     val iconIndex: Int = 0,
-    val isIconPickerOpen: Boolean = false
+    val isIconPickerOpen: Boolean = false,
+    val isAddFieldMenuOpen: Boolean = false
 ) {
-
     val iconResId: Int
         get() {
             val icons = IconsEnum.entries

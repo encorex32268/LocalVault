@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -38,24 +39,25 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.fromColorLong
 import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
-import com.lihan.localvault.core.presentation.ui.theme.Background
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.VaultAction
-import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AccountVaultTextField
-import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AddressVaultTextField
-import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.NoteVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.PasswordOutputTransformation
+import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
 import java.time.Instant
 
 @Composable
@@ -199,44 +201,165 @@ fun VaultItemCard(
                         )
                     }
                 } else {
-                    when (val content = vault.content) {
-                        is VaultContentUi.Account -> {
-                            AccountVaultTextField(
-                                accountTextFieldState = content.accountState,
-                                passwordTextFieldState = content.passwordState,
-                                onAccountCopyClick = {
-                                    onAction(VaultAction.OnCopyClick(it))
-                                },
-                                onPasswordCopyClick = {
-                                    onAction(VaultAction.OnCopyClick(it))
-                                },
-                            )
-                        }
-                        is VaultContentUi.Address -> {
-                            AddressVaultTextField(
-                                zipTextFieldState = content.zipCodeState,
-                                addressTextFieldState = content.addressState,
-                                onZipCopyClick = {
-                                    onAction(VaultAction.OnCopyClick(it))
-                                },
-                                onAddressCopyClick = {
-                                    onAction(VaultAction.OnCopyClick(it))
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        vault.content?.fields?.forEach { field ->
+                            when (field.type) {
+                                FieldType.PASSWORD -> {
+                                    PasswordFieldCardItem(
+                                        label = field.label,
+                                        state = field.state,
+                                        onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
+                                    )
                                 }
-                            )
-                        }
-                        is VaultContentUi.Note -> {
-                            NoteVaultTextField(
-                                noteTextFieldState = content.noteState,
-                                onNoteCopyClick = {
-                                    onAction(VaultAction.OnCopyClick(it))
+                                FieldType.NOTE -> {
+                                    NoteFieldCardItem(
+                                        label = field.label,
+                                        state = field.state,
+                                        onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
+                                    )
                                 }
-                            )
+                                FieldType.TEXT -> {
+                                    TextFieldCardItem(
+                                        label = field.label,
+                                        state = field.state,
+                                        onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
+                                    )
+                                }
+                            }
                         }
-                        null -> Unit
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PasswordFieldCardItem(
+    label: String,
+    state: TextFieldState,
+    onCopyClick: (String) -> Unit
+) {
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.SemiBold,
+            color = OnBackground,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        VaultTextField(
+            textFieldState = state,
+            placeholder = stringResource(R.string.password_placeholder),
+            outputTransformation = if (isPasswordVisible) null else PasswordOutputTransformation(),
+            lineLimits = TextFieldLineLimits.SingleLine,
+            trailingIcon = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = { isPasswordVisible = !isPasswordVisible },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(22.dp),
+                            imageVector = if (isPasswordVisible) {
+                                ImageVector.vectorResource(R.drawable.eye)
+                            } else {
+                                ImageVector.vectorResource(R.drawable.eye_off)
+                            },
+                            contentDescription = null,
+                            tint = OnBackground
+                        )
+                    }
+                    IconButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = { onCopyClick(state.text.trim().toString()) },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(22.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.copy),
+                            contentDescription = null,
+                            tint = OnBackground
+                        )
+                    }
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun TextFieldCardItem(
+    label: String,
+    state: TextFieldState,
+    onCopyClick: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.SemiBold,
+            color = OnBackground,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        VaultTextField(
+            textFieldState = state,
+            placeholder = label.lowercase(),
+            lineLimits = TextFieldLineLimits.SingleLine,
+            trailingIcon = {
+                IconButton(
+                    modifier = Modifier.size(32.dp),
+                    onClick = { onCopyClick(state.text.trim().toString()) },
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        modifier = Modifier.size(22.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.copy),
+                        contentDescription = null,
+                        tint = OnBackground
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun NoteFieldCardItem(
+    label: String,
+    state: TextFieldState,
+    onCopyClick: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.SemiBold,
+            color = OnBackground,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        VaultTextField(
+            textFieldState = state,
+            placeholder = label.lowercase(),
+            lineLimits = TextFieldLineLimits.Default,
+            trailingIcon = {
+                IconButton(
+                    modifier = Modifier.size(32.dp),
+                    onClick = { onCopyClick(state.text.trim().toString()) },
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        modifier = Modifier.size(22.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.copy),
+                        contentDescription = null,
+                        tint = OnBackground
+                    )
+                }
+            }
+        )
     }
 }
 
@@ -254,8 +377,11 @@ private fun VaultItemCardPreview() {
                 formattedUpdatedAt = "2026年10月23日 下午4:30",
                 category = VaultCategory.NOTE,
                 isExpand = true,
-                content = VaultContentUi.Note(
-                    noteState = TextFieldState("Preview note content")
+                content = VaultContentUi(
+                    fields = listOf(
+                        VaultFieldUi(type = FieldType.TEXT, label = "Account", state = TextFieldState("encore")),
+                        VaultFieldUi(type = FieldType.PASSWORD, label = "Password", state = TextFieldState("password123"))
+                    )
                 )
             ),
             onAction = {}

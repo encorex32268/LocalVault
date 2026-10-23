@@ -1,17 +1,18 @@
 package com.lihan.localvault.core.domain
 
-sealed interface VaultContent {
-    data class Account(
-        val account: String,
-        val password: String
-    ): VaultContent
-
-    data class Address(
-        val zipCode: String,
-        val address: String
-    ): VaultContent
-
-    data class Note(
-        val content: String
-    ): VaultContent
+enum class FieldType {
+    TEXT,
+    PASSWORD,
+    NOTE
 }
+
+data class VaultField(
+    val id: String = java.util.UUID.randomUUID().toString(),
+    val type: FieldType,
+    val label: String,
+    val value: String
+)
+
+data class VaultContent(
+    val fields: List<VaultField> = emptyList()
+)

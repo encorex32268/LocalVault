@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lihan.localvault.R
+import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.Background
 import com.lihan.localvault.core.presentation.ui.theme.DarkBackground
@@ -58,6 +59,7 @@ import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultItemCard
 import org.koin.androidx.compose.koinViewModel
@@ -237,8 +239,14 @@ private fun VaultScreenPreview() {
                         updatedAt = Instant.now().toEpochMilli(),
                         category = VaultCategory.entries.random(),
                         isExpand = it == 4,
-                        content = if (it == 4) VaultContentUi.Note(
-                            noteState = TextFieldState("Sample note content")
+                        content = if (it == 4) VaultContentUi(
+                            fields = listOf(
+                                VaultFieldUi(
+                                    type = FieldType.NOTE,
+                                    label = "Note",
+                                    state = TextFieldState("Sample note content")
+                                )
+                            )
                         ) else null
                     )
                 }
