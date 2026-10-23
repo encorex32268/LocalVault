@@ -23,6 +23,7 @@
 | **android-image-loader-coil** | Coil 圖片載入設定，含高流量快取策略 |
 | **android-module-structure** | 專案模組架構（單模組 / 多模組）、Gradle 設定、Convention Plugins、Java 8+ Desugaring |
 | **android-navigation** | Navigation Compose 2.8+ 型別安全導航、底部標籤切換、跨 Feature Lambda 解耦 |
+| **android-navigation-3** | Jetpack Navigation 3 (androidx.navigation3) 純 Compose 導航、NavDisplay、開發者持有之 BackStack、雙模式 Create/Edit 路由 |
 | **android-permission** | 宣告式 Compose 權限處理（通知、相機、定位） |
 | **android-single-app-module-feature-create** | MVI 功能模組自動產生腳本 |
 | **android-testing** | JUnit 5 + AssertK + Turbine + MainCoroutineExtension 測試模式與 Compose UI Robot Pattern |
@@ -54,6 +55,7 @@ Each skill module includes a `SKILL.md` guide and automation scripts for quick p
 | **android-image-loader-coil** | Coil image loading with high-volume caching strategies |
 | **android-module-structure** | Project module architecture (single/multi-module), Gradle config, Convention Plugins, Java 8+ Desugaring |
 | **android-navigation** | Type-safe Navigation Compose 2.8+ with bottom tab switching & cross-feature lambda decoupling |
+| **android-navigation-3** | Jetpack Navigation 3 (androidx.navigation3) pure Compose navigation, NavDisplay, developer-owned BackStack, dual-mode Create/Edit |
 | **android-permission** | Declarative Compose permission handling (notification, camera, location) |
 | **android-single-app-module-feature-create** | MVI feature module scaffolding script |
 | **android-testing** | JUnit 5 + AssertK + Turbine + MainCoroutineExtension patterns & Compose UI Robot Pattern |
@@ -85,6 +87,7 @@ Each skill module includes a `SKILL.md` guide and automation scripts for quick p
 | **android-image-loader-coil** | Coil 画像ローディング、大容量キャッシュ戦略 |
 | **android-module-structure** | プロジェクトモジュール構成（シングル/マルチモジュール）、Gradle 設定、Convention Plugins、Java 8+ Desugaring |
 | **android-navigation** | Navigation Compose 2.8+ 型安全ナビゲーション、ボトムタブ切替、クロスフィーチャー Lambda 分離 |
+| **android-navigation-3** | Jetpack Navigation 3 (androidx.navigation3) 純粋な Compose ナビゲーション、NavDisplay、開発者所有の BackStack、作成/編集両対応ルート |
 | **android-permission** | 宣言的 Compose 権限処理（通知・カメラ・位置情報） |
 | **android-single-app-module-feature-create** | MVI 機能モジュール自動生成スクリプト |
 | **android-testing** | JUnit 5 + AssertK + Turbine + MainCoroutineExtension テストパターンと Compose UI Robot Pattern |
