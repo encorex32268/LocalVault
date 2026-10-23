@@ -242,7 +242,7 @@ private fun VaultScreenPreview() {
                         content = if (it == 4) VaultContentUi(
                             fields = listOf(
                                 VaultFieldUi(
-                                    type = FieldType.NOTE,
+                                    type = FieldType.MULTI_LINE,
                                     label = "Note",
                                     state = TextFieldState("Sample note content")
                                 )

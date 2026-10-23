@@ -211,14 +211,14 @@ fun VaultItemCard(
                                         onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
                                     )
                                 }
-                                FieldType.NOTE -> {
+                                FieldType.MULTI_LINE -> {
                                     NoteFieldCardItem(
                                         label = field.label,
                                         state = field.state,
                                         onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
                                     )
                                 }
-                                FieldType.TEXT -> {
+                                FieldType.SINGLE_LINE -> {
                                     TextFieldCardItem(
                                         label = field.label,
                                         state = field.state,
@@ -243,12 +243,14 @@ private fun PasswordFieldCardItem(
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = label,
-            fontWeight = FontWeight.SemiBold,
-            color = OnBackground,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        if (label.isNotBlank()) {
+            Text(
+                text = label,
+                fontWeight = FontWeight.SemiBold,
+                color = OnBackground,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
         VaultTextField(
             textFieldState = state,
             placeholder = stringResource(R.string.password_placeholder),
@@ -300,15 +302,17 @@ private fun TextFieldCardItem(
     onCopyClick: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = label,
-            fontWeight = FontWeight.SemiBold,
-            color = OnBackground,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        if (label.isNotBlank()) {
+            Text(
+                text = label,
+                fontWeight = FontWeight.SemiBold,
+                color = OnBackground,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
         VaultTextField(
             textFieldState = state,
-            placeholder = label.lowercase(),
+            placeholder = if (label.isNotBlank()) label.lowercase() else stringResource(R.string.single_line_input),
             lineLimits = TextFieldLineLimits.SingleLine,
             trailingIcon = {
                 IconButton(
@@ -335,15 +339,17 @@ private fun NoteFieldCardItem(
     onCopyClick: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            text = label,
-            fontWeight = FontWeight.SemiBold,
-            color = OnBackground,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        if (label.isNotBlank()) {
+            Text(
+                text = label,
+                fontWeight = FontWeight.SemiBold,
+                color = OnBackground,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
         VaultTextField(
             textFieldState = state,
-            placeholder = label.lowercase(),
+            placeholder = if (label.isNotBlank()) label.lowercase() else stringResource(R.string.note_placeholder),
             lineLimits = TextFieldLineLimits.Default,
             trailingIcon = {
                 IconButton(
@@ -375,11 +381,11 @@ private fun VaultItemCardPreview() {
                 title = "Account",
                 updatedAt = Instant.now().toEpochMilli(),
                 formattedUpdatedAt = "2026年10月23日 下午4:30",
-                category = VaultCategory.NOTE,
+                category = VaultCategory.CUSTOM,
                 isExpand = true,
                 content = VaultContentUi(
                     fields = listOf(
-                        VaultFieldUi(type = FieldType.TEXT, label = "Account", state = TextFieldState("encore")),
+                        VaultFieldUi(type = FieldType.SINGLE_LINE, label = "Account", state = TextFieldState("encore")),
                         VaultFieldUi(type = FieldType.PASSWORD, label = "Password", state = TextFieldState("password123"))
                     )
                 )

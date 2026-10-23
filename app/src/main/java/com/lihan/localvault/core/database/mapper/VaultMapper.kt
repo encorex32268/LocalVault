@@ -1,9 +1,6 @@
 package com.lihan.localvault.core.database.mapper
 
-import com.lihan.localvault.core.database.dto.AccountContentDto
-import com.lihan.localvault.core.database.dto.AddressContentDto
 import com.lihan.localvault.core.database.dto.DynamicVaultContentDto
-import com.lihan.localvault.core.database.dto.NoteContentDto
 import com.lihan.localvault.core.database.dto.VaultFieldDto
 import com.lihan.localvault.core.database.entity.VaultEntity
 import com.lihan.localvault.core.database.entity.VaultSummaryTuple
@@ -60,69 +57,29 @@ fun VaultContent.toJsonString(json: Json): String {
 }
 
 fun String.toVaultContent(
-    category: VaultCategory,
+    category: VaultCategory = VaultCategory.CUSTOM,
     json: Json
 ): VaultContent {
     return try {
         val dynamicDto = json.decodeFromString<DynamicVaultContentDto>(this)
-        if (dynamicDto.fields.isNotEmpty()) {
-            VaultContent(
-                fields = dynamicDto.fields.map { dto ->
-                    VaultField(
-                        id = dto.id.ifEmpty { java.util.UUID.randomUUID().toString() },
-                        type = try {
-                            FieldType.valueOf(dto.type)
-                        } catch (e: Exception) {
-                            FieldType.TEXT
-                        },
-                        label = dto.label,
-                        value = dto.value
-                    )
-                }
-            )
-        } else {
-            fallbackLegacyContent(this, category, json)
-        }
-    } catch (e: Exception) {
-        fallbackLegacyContent(this, category, json)
-    }
-}
-
-private fun fallbackLegacyContent(
-    rawJson: String,
-    category: VaultCategory,
-    json: Json
-): VaultContent {
-    return try {
-        when (category) {
-            VaultCategory.ACCOUNT -> {
-                val dto = json.decodeFromString<AccountContentDto>(rawJson)
-                VaultContent(
-                    fields = listOf(
-                        VaultField(type = FieldType.TEXT, label = "Account", value = dto.account),
-                        VaultField(type = FieldType.PASSWORD, label = "Password", value = dto.password)
-                    )
+        VaultContent(
+            fields = dynamicDto.fields.map { dto ->
+                VaultField(
+                    id = dto.id.ifEmpty { java.util.UUID.randomUUID().toString() },
+                    type = try {
+                        FieldType.valueOf(dto.type)
+                    } catch (e: Exception) {
+                        when (dto.type) {
+                            "TEXT" -> FieldType.SINGLE_LINE
+                            "NOTE" -> FieldType.MULTI_LINE
+                            else -> FieldType.SINGLE_LINE
+                        }
+                    },
+                    label = dto.label,
+                    value = dto.value
                 )
             }
-            VaultCategory.ADDRESS -> {
-                val dto = json.decodeFromString<AddressContentDto>(rawJson)
-                VaultContent(
-                    fields = listOf(
-                        VaultField(type = FieldType.TEXT, label = "ZipCode", value = dto.zipCode),
-                        VaultField(type = FieldType.TEXT, label = "Address", value = dto.address)
-                    )
-                )
-            }
-            VaultCategory.NOTE -> {
-                val dto = json.decodeFromString<NoteContentDto>(rawJson)
-                VaultContent(
-                    fields = listOf(
-                        VaultField(type = FieldType.NOTE, label = "Note", value = dto.content)
-                    )
-                )
-            }
-            VaultCategory.CUSTOM -> VaultContent()
-        }
+        )
     } catch (e: Exception) {
         VaultContent()
     }

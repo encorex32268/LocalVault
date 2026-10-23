@@ -11,7 +11,7 @@ data class CreateVaultState(
     val vaultId: Long? = null,
     val isLoading: Boolean = false,
     val vaultTitle: TextFieldState = TextFieldState(),
-    val category: VaultCategory = VaultCategory.ACCOUNT,
+    val category: VaultCategory = VaultCategory.CUSTOM,
     val fields: List<VaultFieldUi> = emptyList(),
     val color: Color = VaultColors.first(),
     val iconIndex: Int = 0,

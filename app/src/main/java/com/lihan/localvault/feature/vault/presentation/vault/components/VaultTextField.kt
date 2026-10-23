@@ -37,8 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
-import com.lihan.localvault.core.domain.VaultCategory
-import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.Placeholder

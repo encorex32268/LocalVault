@@ -1,9 +1,9 @@
 package com.lihan.localvault.core.domain
 
 enum class FieldType {
-    TEXT,
+    SINGLE_LINE,
     PASSWORD,
-    NOTE
+    MULTI_LINE
 }
 
 data class VaultField(

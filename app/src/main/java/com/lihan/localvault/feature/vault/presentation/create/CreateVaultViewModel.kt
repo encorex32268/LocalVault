@@ -32,13 +32,7 @@ class CreateVaultViewModel(
     val events = _events.receiveAsFlow()
 
     private val _state = MutableStateFlow(
-        CreateVaultState(
-            category = VaultCategory.CUSTOM,
-            fields = listOf(
-                VaultFieldUi(type = FieldType.TEXT, label = "Account"),
-                VaultFieldUi(type = FieldType.PASSWORD, label = "Password")
-            )
-        )
+        CreateVaultState()
     )
     val state = _state.stateIn(
         scope = viewModelScope,
@@ -75,16 +69,9 @@ class CreateVaultViewModel(
                 _state.update { it.copy(isAddFieldMenuOpen = false) }
             }
             is CreateVaultAction.OnAddField -> {
-                val defaultLabel = when (action.type) {
-                    FieldType.TEXT -> "Account"
-                    FieldType.PASSWORD -> "Password"
-                    FieldType.NOTE -> "Note"
-                }
-                val count = _state.value.fields.count { it.type == action.type }
-                val label = if (count == 0) defaultLabel else "$defaultLabel ${count + 1}"
                 val newField = VaultFieldUi(
                     type = action.type,
-                    label = label
+                    label = ""
                 )
                 _state.update {
                     it.copy(
@@ -104,17 +91,6 @@ class CreateVaultViewModel(
                         fields = it.fields.map { field ->
                             if (field.id == action.fieldId) {
                                 field.copy(isPasswordVisible = !field.isPasswordVisible)
-                            } else field
-                        }
-                    )
-                }
-            }
-            is CreateVaultAction.OnFieldLabelChange -> {
-                _state.update {
-                    it.copy(
-                        fields = it.fields.map { field ->
-                            if (field.id == action.fieldId) {
-                                field.copy(label = action.newLabel)
                             } else field
                         }
                     )

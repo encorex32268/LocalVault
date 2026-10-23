@@ -1,8 +1,8 @@
 package com.lihan.localvault.core.domain
 
 enum class VaultCategory {
-    ACCOUNT,
-    ADDRESS,
-    NOTE,
+    SINGLE_LINE,
+    PASSWORD,
+    MULTI_LINE,
     CUSTOM
 }

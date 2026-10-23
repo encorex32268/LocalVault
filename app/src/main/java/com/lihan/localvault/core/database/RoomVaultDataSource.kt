@@ -54,7 +54,11 @@ class RoomVaultDataSource(
                 iv = encryptedTuple.iv
             )
             val jsonString = decryptedBytes.decodeToString()
-            val category = VaultCategory.valueOf(encryptedTuple.category)
+            val category = try {
+                VaultCategory.valueOf(encryptedTuple.category)
+            } catch (e: Exception) {
+                VaultCategory.CUSTOM
+            }
             val content = jsonString.toVaultContent(category = category, json = json)
 
             Result.Success(content)
