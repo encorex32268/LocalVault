@@ -43,6 +43,7 @@ ksp {
 }
 
 dependencies {
+    implementation(libs.androidx.datastore.preferences)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)

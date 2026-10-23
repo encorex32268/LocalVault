@@ -11,6 +11,7 @@ import com.lihan.localvault.core.domain.Vault
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.domain.VaultField
+import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.feature.vault.domain.VaultRepository
@@ -19,13 +20,15 @@ import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CreateVaultViewModel(
-    private val vaultRepository: VaultRepository
+    private val vaultRepository: VaultRepository,
+    private val appDataStore: AppDataStore
 ) : ViewModel() {
 
     private val _events = Channel<CreateVaultEvent>()
@@ -40,11 +43,17 @@ class CreateVaultViewModel(
         initialValue = _state.value
     )
 
+    init {
+        loadLastUsedPreferences()
+    }
+
     fun onAction(action: CreateVaultAction) {
         when (action) {
             is CreateVaultAction.OnInit -> {
                 if (action.vaultId != null) {
                     loadExistingVault(action.vaultId)
+                } else {
+                    loadLastUsedPreferences()
                 }
             }
             is CreateVaultAction.OnOpenIconPicker -> {
@@ -98,6 +107,19 @@ class CreateVaultViewModel(
             }
             is CreateVaultAction.OnSaveClick -> saveVault()
             else -> Unit
+        }
+    }
+
+    private fun loadLastUsedPreferences() {
+        viewModelScope.launch {
+            val colorLong = appDataStore.lastUsedColor.first()
+            val iconIndex = appDataStore.lastUsedIconIndex.first()
+            _state.update { current ->
+                current.copy(
+                    color = colorLong?.let { Color.fromColorLong(it) } ?: current.color,
+                    iconIndex = iconIndex ?: current.iconIndex
+                )
+            }
         }
     }
 
@@ -156,6 +178,12 @@ class CreateVaultViewModel(
         viewModelScope.launch {
             when (val result = vaultRepository.upsertVault(vault, domainContent)) {
                 is Result.Success -> {
+                    if (currentState.vaultId == null) {
+                        appDataStore.saveLastUsedVaultStyle(
+                            color = currentState.color.toColorLong(),
+                            iconIndex = currentState.iconIndex
+                        )
+                    }
                     _events.send(CreateVaultEvent.SaveSuccess)
                 }
                 is Result.Error -> {
