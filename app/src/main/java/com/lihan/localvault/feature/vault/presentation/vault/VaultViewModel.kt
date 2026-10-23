@@ -2,8 +2,8 @@ package com.lihan.localvault.feature.vault.presentation.vault
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.presentation.ui.theme.ThemeManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
@@ -18,12 +18,13 @@ import kotlinx.coroutines.launch
 
 class VaultViewModel(
     private val vaultRepository: VaultRepository,
-    private val themeManager: ThemeManager
+    private val appDataStore: AppDataStore
 ): ViewModel() {
+
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(VaultState(isDarkTheme = themeManager.isDarkTheme.value))
+    private val _state = MutableStateFlow(VaultState())
     val state = _state.onStart {
         if (!hasLoadedInitialData) {
             observeVaultItems()
@@ -34,7 +35,7 @@ class VaultViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = VaultState(isDarkTheme = themeManager.isDarkTheme.value)
+            initialValue = VaultState()
         )
 
     fun onAction(action: VaultAction) {
@@ -53,7 +54,11 @@ class VaultViewModel(
             is VaultAction.OnDismissDeleteDialog -> {
                 _state.update { it.copy(deleteTargetId = null) }
             }
-            is VaultAction.OnToggleTheme -> themeManager.toggleTheme()
+            is VaultAction.OnToggleTheme -> {
+                viewModelScope.launch {
+                    appDataStore.toggleTheme()
+                }
+            }
             is VaultAction.OnDelete -> deleteVault(action.id)
             is VaultAction.OnCopyClick,
             is VaultAction.OnCreateClick,
@@ -62,7 +67,7 @@ class VaultViewModel(
     }
 
     private fun observeTheme() {
-        themeManager.isDarkTheme
+        appDataStore.isDarkTheme
             .onEach { isDark ->
                 _state.update { it.copy(isDarkTheme = isDark) }
             }
