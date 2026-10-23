@@ -52,10 +52,12 @@ fun VaultTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     trailingIcon: @Composable (() -> Unit)?=null,
     outputTransformation: OutputTransformation? = null,
+    enabled: Boolean = true,
 ) {
 
     BasicTextField(
         state = textFieldState,
+        enabled = enabled,
         keyboardOptions = keyboardOptions,
         onKeyboardAction = onKeyboardAction,
         outputTransformation = outputTransformation,

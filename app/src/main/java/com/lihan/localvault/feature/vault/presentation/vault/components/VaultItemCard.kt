@@ -26,10 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,8 +52,6 @@ import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.VaultAction
-import com.lihan.localvault.feature.vault.presentation.vault.components.PasswordOutputTransformation
-import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
 import java.time.Instant
 
 @Composable
@@ -212,14 +206,14 @@ fun VaultItemCard(
                                     )
                                 }
                                 FieldType.MULTI_LINE -> {
-                                    NoteFieldCardItem(
+                                    MultiLineFieldCardItem(
                                         label = field.label,
                                         state = field.state,
                                         onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
                                     )
                                 }
                                 FieldType.SINGLE_LINE -> {
-                                    TextFieldCardItem(
+                                    SingleLineFieldCardItem(
                                         label = field.label,
                                         state = field.state,
                                         onCopyClick = { onAction(VaultAction.OnCopyClick(it)) }
@@ -231,141 +225,6 @@ fun VaultItemCard(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun PasswordFieldCardItem(
-    label: String,
-    state: TextFieldState,
-    onCopyClick: (String) -> Unit
-) {
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label.isNotBlank()) {
-            Text(
-                text = label,
-                fontWeight = FontWeight.SemiBold,
-                color = OnBackground,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        VaultTextField(
-            textFieldState = state,
-            placeholder = stringResource(R.string.password_placeholder),
-            outputTransformation = if (isPasswordVisible) null else PasswordOutputTransformation(),
-            lineLimits = TextFieldLineLimits.SingleLine,
-            trailingIcon = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    IconButton(
-                        modifier = Modifier.size(32.dp),
-                        onClick = { isPasswordVisible = !isPasswordVisible },
-                        shape = CircleShape
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(22.dp),
-                            imageVector = if (isPasswordVisible) {
-                                ImageVector.vectorResource(R.drawable.eye)
-                            } else {
-                                ImageVector.vectorResource(R.drawable.eye_off)
-                            },
-                            contentDescription = null,
-                            tint = OnBackground
-                        )
-                    }
-                    IconButton(
-                        modifier = Modifier.size(32.dp),
-                        onClick = { onCopyClick(state.text.trim().toString()) },
-                        shape = CircleShape
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(22.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.copy),
-                            contentDescription = null,
-                            tint = OnBackground
-                        )
-                    }
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun TextFieldCardItem(
-    label: String,
-    state: TextFieldState,
-    onCopyClick: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label.isNotBlank()) {
-            Text(
-                text = label,
-                fontWeight = FontWeight.SemiBold,
-                color = OnBackground,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        VaultTextField(
-            textFieldState = state,
-            placeholder = if (label.isNotBlank()) label.lowercase() else stringResource(R.string.single_line_input),
-            lineLimits = TextFieldLineLimits.SingleLine,
-            trailingIcon = {
-                IconButton(
-                    modifier = Modifier.size(32.dp),
-                    onClick = { onCopyClick(state.text.trim().toString()) },
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        modifier = Modifier.size(22.dp),
-                        imageVector = ImageVector.vectorResource(R.drawable.copy),
-                        contentDescription = null,
-                        tint = OnBackground
-                    )
-                }
-            }
-        )
-    }
-}
-
-@Composable
-private fun NoteFieldCardItem(
-    label: String,
-    state: TextFieldState,
-    onCopyClick: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        if (label.isNotBlank()) {
-            Text(
-                text = label,
-                fontWeight = FontWeight.SemiBold,
-                color = OnBackground,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        VaultTextField(
-            textFieldState = state,
-            placeholder = if (label.isNotBlank()) label.lowercase() else stringResource(R.string.note_placeholder),
-            lineLimits = TextFieldLineLimits.Default,
-            trailingIcon = {
-                IconButton(
-                    modifier = Modifier.size(32.dp),
-                    onClick = { onCopyClick(state.text.trim().toString()) },
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        modifier = Modifier.size(22.dp),
-                        imageVector = ImageVector.vectorResource(R.drawable.copy),
-                        contentDescription = null,
-                        tint = OnBackground
-                    )
-                }
-            }
-        )
     }
 }
 
