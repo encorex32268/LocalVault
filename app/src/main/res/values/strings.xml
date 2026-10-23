@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">LocalVault</string>
+    <string name="account">Account</string>
+    <string name="account_placeholder">account</string>
+    <string name="password">Password</string>
+    <string name="password_placeholder">password</string>
+    <string name="zip">ZipCode</string>
+    <string name="zip_placeholder">zip code</string>
+    <string name="address">Address</string>
+    <string name="address_placeholder">address</string>
+    <string name="note">Note</string>
+    <string name="note_placeholder">content</string>
+</resources>

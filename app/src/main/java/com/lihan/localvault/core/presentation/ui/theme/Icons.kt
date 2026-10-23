@@ -1,0 +1,40 @@
+package com.lihan.localvault.core.presentation.ui.theme
+
+import androidx.annotation.DrawableRes
+import com.lihan.localvault.R
+
+enum class IconsEnum(@DrawableRes val resId: Int) {
+    BIT_COIN(R.drawable.bitcoin),
+    BOT_MESSAGE_SQUARE(R.drawable.bot_message_square),
+    BUILDING_COMPLEX(R.drawable.building_complex),
+    CAKE(R.drawable.cake),
+    CALENDAR(R.drawable.calendar),
+    CAR(R.drawable.car),
+    CLAPPERBOARD(R.drawable.clapperboard),
+    CONTACT(R.drawable.contact),
+    CONTAINER(R.drawable.container),
+    COPY(R.drawable.copy),
+    CPU(R.drawable.cpu),
+    CREDIT_CARD(R.drawable.credit_card),
+    EYE(R.drawable.eye),
+    GLOBE(R.drawable.globe),
+    HEADPHONES(R.drawable.headphones),
+    HOUSE(R.drawable.house),
+    HOUSES(R.drawable.houses),
+    KEY(R.drawable.key),
+    LANDMARK(R.drawable.landmark),
+    LOCK_KEYHOLE(R.drawable.lock_keyhole),
+    MAIL(R.drawable.mail),
+    MAP(R.drawable.map),
+    MESSAGES_CIRCLE(R.drawable.messages_circle),
+    PHONE(R.drawable.phone),
+    SIGNAL(R.drawable.signal),
+    SMARTPHONE(R.drawable.smartphone),
+    STAR(R.drawable.star),
+    TOMBSTONE(R.drawable.tombstone),
+    TRASH(R.drawable.trash),
+    USER(R.drawable.user),
+    UTENSILS(R.drawable.utensils),
+    WIFI(R.drawable.wifi),
+    WIFI_LOCK(R.drawable.wifi_lock),
+}

@@ -1,0 +1,223 @@
+package com.lihan.localvault.feature.vault.presentation.vault.components
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.fromColorLong
+import androidx.compose.ui.graphics.toColorLong
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.lihan.localvault.R
+import com.lihan.localvault.core.domain.VaultCategory
+import com.lihan.localvault.core.presentation.ui.theme.Background
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
+import com.lihan.localvault.core.presentation.ui.theme.OnBackground
+import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
+import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
+import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultUi
+import com.lihan.localvault.feature.vault.presentation.vault.VaultAction
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AccountVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AddressVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.NoteVaultTextField
+import java.time.Instant
+
+@Composable
+fun VaultItemCard(
+    vault: VaultUi,
+    modifier: Modifier = Modifier,
+    onAction: (VaultAction) -> Unit,
+) {
+    val accentColor = Color.fromColorLong(vault.color)
+    val cardBackgroundColor = accentColor
+        .copy(alpha = if (vault.isExpand) 0.14f else 0.08f)
+        .compositeOver(SurfaceContainer)
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        onClick = {
+            onAction(VaultAction.OnToggleExpand(vault.id))
+        },
+        color = cardBackgroundColor,
+        contentColor = OnBackground,
+        border = BorderStroke(
+            width = 1.dp,
+            brush = Brush.linearGradient(
+                colors = listOf(
+                    accentColor.copy(alpha = if (vault.isExpand) 0.65f else 0.45f),
+                    accentColor.copy(alpha = 0.12f)
+                )
+            )
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .then(
+                    if (vault.isExpand) {
+                        Modifier.fillMaxWidth()
+                    } else {
+                        Modifier
+                    }
+                )
+                .padding(horizontal = 14.dp, vertical = 12.dp)
+                .animateContentSize()
+        ) {
+            Row(
+                modifier = if (vault.isExpand) Modifier.fillMaxWidth() else Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(accentColor.copy(alpha = 0.16f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(18.dp),
+                        imageVector = vault.imageVector,
+                        contentDescription = null,
+                        tint = accentColor
+                    )
+                }
+                Text(
+                    modifier = if (vault.isExpand) Modifier.basicMarquee().weight(1f) else Modifier,
+                    text = vault.title,
+                    color = OnBackground,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    maxLines = 1
+                )
+                if (vault.isExpand) {
+                    IconButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = {
+                            onAction(VaultAction.OnDelete(vault.id))
+                        },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.trash),
+                            contentDescription = null,
+                            tint = VaultCoralRed
+                        )
+                    }
+                }
+            }
+            if (vault.isExpand) {
+                Spacer(Modifier.height(12.dp))
+                if (vault.isLoadingContent) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = accentColor,
+                            strokeWidth = 2.dp
+                        )
+                    }
+                } else {
+                    when (val content = vault.content) {
+                        is VaultContentUi.Account -> {
+                            AccountVaultTextField(
+                                accountTextFieldState = content.accountState,
+                                passwordTextFieldState = content.passwordState,
+                                onAccountCopyClick = {
+                                    onAction(VaultAction.OnCopyClick(it))
+                                },
+                                onPasswordCopyClick = {
+                                    onAction(VaultAction.OnCopyClick(it))
+                                },
+                            )
+                        }
+                        is VaultContentUi.Address -> {
+                            AddressVaultTextField(
+                                zipTextFieldState = content.zipCodeState,
+                                addressTextFieldState = content.addressState,
+                                onZipCopyClick = {
+                                    onAction(VaultAction.OnCopyClick(it))
+                                },
+                                onAddressCopyClick = {
+                                    onAction(VaultAction.OnCopyClick(it))
+                                }
+                            )
+                        }
+                        is VaultContentUi.Note -> {
+                            NoteVaultTextField(
+                                noteTextFieldState = content.noteState,
+                                onNoteCopyClick = {
+                                    onAction(VaultAction.OnCopyClick(it))
+                                }
+                            )
+                        }
+                        null -> Unit
+                    }
+                }
+            }
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(backgroundColor = 0xFF0D1117, showBackground = true)
+@Composable
+private fun VaultItemCardPreview() {
+    LocalVaultTheme {
+        VaultItemCard(
+            vault = VaultUi(
+                iconIndex = 1,
+                color = VaultCoralRed.toColorLong(),
+                title = "Account",
+                updatedAt = Instant.now().toEpochMilli(),
+                category = VaultCategory.NOTE,
+                isExpand = true,
+                content = VaultContentUi.Note(
+                    noteState = TextFieldState("Preview note content")
+                )
+            ),
+            onAction = {}
+        )
+    }
+}
