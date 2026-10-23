@@ -29,4 +29,9 @@
     <string name="add_field_password_desc">Concealed password, PIN</string>
     <string name="add_field_note_desc">Multiline text, content</string>
     <string name="delete">Delete</string>
+    <string name="search">Search</string>
+    <string name="search_placeholder">Search vaults…</string>
+    <string name="clear_search">Clear search</string>
+    <string name="close_search">Close search</string>
+    <string name="no_vaults_found">No vaults found</string>
 </resources>

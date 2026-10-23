@@ -60,6 +60,21 @@ class VaultViewModel(
                 }
             }
             is VaultAction.OnDelete -> deleteVault(action.id)
+            is VaultAction.OnSearchQueryChange -> {
+                _state.update { it.copy(searchQuery = action.query) }
+            }
+            is VaultAction.OnToggleSearch -> {
+                _state.update { current ->
+                    val willBeActive = !current.isSearchActive
+                    current.copy(
+                        isSearchActive = willBeActive,
+                        searchQuery = if (!willBeActive) "" else current.searchQuery
+                    )
+                }
+            }
+            is VaultAction.OnClearSearch -> {
+                _state.update { it.copy(searchQuery = "") }
+            }
             is VaultAction.OnCopyClick,
             is VaultAction.OnCreateClick,
             is VaultAction.OnEditClick -> Unit

@@ -5,15 +5,12 @@ package com.lihan.localvault.feature.vault.presentation.vault
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
@@ -22,17 +19,14 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -42,9 +36,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
@@ -62,6 +54,7 @@ import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultItemCard
+import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTopAppBar
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
 
@@ -100,38 +93,14 @@ private fun VaultScreen(
         modifier = Modifier.fillMaxSize(),
         containerColor = Background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = OnBackground,
-                            fontSize = 28.sp
-                        )
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            onAction(VaultAction.OnToggleTheme)
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            imageVector = ImageVector.vectorResource(
-                                if (state.isDarkTheme) R.drawable.sun else R.drawable.moon
-                            ),
-                            contentDescription = stringResource(
-                                if (state.isDarkTheme) R.string.switch_to_light_mode else R.string.switch_to_dark_mode
-                            ),
-                            tint = OnBackground
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+            VaultTopAppBar(
+                isSearchActive = state.isSearchActive,
+                searchQuery = state.searchQuery,
+                isDarkTheme = state.isDarkTheme,
+                onSearchQueryChange = { onAction(VaultAction.OnSearchQueryChange(it)) },
+                onToggleSearch = { onAction(VaultAction.OnToggleSearch) },
+                onClearSearch = { onAction(VaultAction.OnClearSearch) },
+                onToggleTheme = { onAction(VaultAction.OnToggleTheme) }
             )
         },
         floatingActionButton = {
@@ -148,20 +117,48 @@ private fun VaultScreen(
         }
     ) { paddingValues ->
 
-        FlowRow(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 12.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            state.items.forEach { item ->
-                VaultItemCard(
-                    vault = item,
-                    onAction = onAction
-                )
+        if (state.isSearchActive && state.searchQuery.isNotBlank() && state.filteredItems.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(48.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.search),
+                        contentDescription = null,
+                        tint = Placeholder.copy(alpha = 0.5f)
+                    )
+                    Text(
+                        text = stringResource(R.string.no_vaults_found),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = Placeholder,
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+            }
+        } else {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 12.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                state.filteredItems.forEach { item ->
+                    VaultItemCard(
+                        vault = item,
+                        onAction = onAction
+                    )
+                }
             }
         }
     }
