@@ -47,6 +47,7 @@ import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.Background
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.OnBackground
+import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
@@ -117,20 +118,59 @@ fun VaultItemCard(
                         tint = accentColor
                     )
                 }
-                Text(
-                    modifier = if (vault.isExpand) Modifier.basicMarquee().weight(1f) else Modifier,
-                    text = vault.title,
-                    color = OnBackground,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    maxLines = 1
-                )
+                if (vault.isExpand) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            modifier = Modifier.basicMarquee(),
+                            text = vault.title,
+                            color = OnBackground,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            maxLines = 1
+                        )
+                        if (vault.formattedUpdatedAt.isNotBlank()) {
+                            Text(
+                                text = vault.formattedUpdatedAt,
+                                color = Placeholder,
+                                style = MaterialTheme.typography.labelSmall
+                            )
+                        }
+                    }
+                } else {
+                    Text(
+                        text = vault.title,
+                        color = OnBackground,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        maxLines = 1
+                    )
+                }
                 if (vault.isExpand) {
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = {
-                            onAction(VaultAction.OnDelete(vault.id))
+                            onAction(VaultAction.OnEditClick(vault.id))
+                        },
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.edit),
+                            contentDescription = null,
+                            tint = accentColor
+                        )
+                    }
+                    IconButton(
+                        modifier = Modifier.size(32.dp),
+                        onClick = {
+                            onAction(VaultAction.OnDeleteClick(vault.id))
                         },
                         shape = CircleShape
                     ) {
@@ -138,7 +178,7 @@ fun VaultItemCard(
                             modifier = Modifier.size(18.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.trash),
                             contentDescription = null,
-                            tint = VaultCoralRed
+                            tint = accentColor
                         )
                     }
                 }
@@ -211,6 +251,7 @@ private fun VaultItemCardPreview() {
                 color = VaultCoralRed.toColorLong(),
                 title = "Account",
                 updatedAt = Instant.now().toEpochMilli(),
+                formattedUpdatedAt = "2026年10月23日 下午4:30",
                 category = VaultCategory.NOTE,
                 isExpand = true,
                 content = VaultContentUi.Note(

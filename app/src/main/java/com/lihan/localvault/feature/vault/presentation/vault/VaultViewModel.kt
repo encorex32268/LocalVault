@@ -37,8 +37,23 @@ class VaultViewModel(
     fun onAction(action: VaultAction) {
         when (action) {
             is VaultAction.OnToggleExpand -> toggleExpand(action.id)
+            is VaultAction.OnDeleteClick -> {
+                _state.update { it.copy(deleteTargetId = action.id) }
+            }
+            is VaultAction.OnConfirmDelete -> {
+                val targetId = _state.value.deleteTargetId
+                if (targetId != null) {
+                    deleteVault(targetId)
+                }
+                _state.update { it.copy(deleteTargetId = null) }
+            }
+            is VaultAction.OnDismissDeleteDialog -> {
+                _state.update { it.copy(deleteTargetId = null) }
+            }
             is VaultAction.OnDelete -> deleteVault(action.id)
-            is VaultAction.OnCopyClick -> Unit
+            is VaultAction.OnCopyClick,
+            is VaultAction.OnCreateClick,
+            is VaultAction.OnEditClick -> Unit
         }
     }
 
@@ -57,7 +72,10 @@ class VaultViewModel(
         }
 
         updateItem(id) { it.copy(isExpand = true, isLoadingContent = true) }
+        loadVaultContent(id)
+    }
 
+    private fun loadVaultContent(id: Long) {
         viewModelScope.launch {
             when (val result = vaultRepository.getVaultContent(id)) {
                 is Result.Success -> {
@@ -91,22 +109,35 @@ class VaultViewModel(
         }
     }
 
-    private fun observeVaultItems(){
+    private fun observeVaultItems() {
         vaultRepository
             .vaultItems
             .onEach { items ->
+                val itemsToReload = mutableListOf<Long>()
+
                 _state.update { current ->
                     val existingMap = current.items.associateBy { it.id }
                     current.copy(
                         items = items.map { vault ->
                             val existing = existingMap[vault.id]
+                            val isStale = existing != null && existing.updatedAt != vault.updatedAt
+                            val shouldReload = existing != null && existing.isExpand && isStale
+
+                            if (shouldReload) {
+                                itemsToReload.add(vault.id)
+                            }
+
                             vault.toUi().copy(
                                 isExpand = existing?.isExpand ?: false,
-                                isLoadingContent = existing?.isLoadingContent ?: false,
-                                content = existing?.content
+                                isLoadingContent = if (shouldReload) true else (existing?.isLoadingContent ?: false),
+                                content = if (isStale) null else existing?.content
                             )
                         }
                     )
+                }
+
+                itemsToReload.forEach { id ->
+                    loadVaultContent(id)
                 }
             }
             .launchIn(viewModelScope)
