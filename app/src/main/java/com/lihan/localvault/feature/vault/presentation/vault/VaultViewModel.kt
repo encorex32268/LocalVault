@@ -3,6 +3,7 @@ package com.lihan.localvault.feature.vault.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.localvault.core.domain.util.Result
+import com.lihan.localvault.core.presentation.ui.theme.ThemeManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
@@ -16,22 +17,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class VaultViewModel(
-    private val vaultRepository: VaultRepository
+    private val vaultRepository: VaultRepository,
+    private val themeManager: ThemeManager
 ): ViewModel() {
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(VaultState())
+    private val _state = MutableStateFlow(VaultState(isDarkTheme = themeManager.isDarkTheme.value))
     val state = _state.onStart {
         if (!hasLoadedInitialData) {
             observeVaultItems()
+            observeTheme()
             hasLoadedInitialData = true
         }
     }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = VaultState()
+            initialValue = VaultState(isDarkTheme = themeManager.isDarkTheme.value)
         )
 
     fun onAction(action: VaultAction) {
@@ -50,11 +53,20 @@ class VaultViewModel(
             is VaultAction.OnDismissDeleteDialog -> {
                 _state.update { it.copy(deleteTargetId = null) }
             }
+            is VaultAction.OnToggleTheme -> themeManager.toggleTheme()
             is VaultAction.OnDelete -> deleteVault(action.id)
             is VaultAction.OnCopyClick,
             is VaultAction.OnCreateClick,
             is VaultAction.OnEditClick -> Unit
         }
+    }
+
+    private fun observeTheme() {
+        themeManager.isDarkTheme
+            .onEach { isDark ->
+                _state.update { it.copy(isDarkTheme = isDark) }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun toggleExpand(id: Long) {

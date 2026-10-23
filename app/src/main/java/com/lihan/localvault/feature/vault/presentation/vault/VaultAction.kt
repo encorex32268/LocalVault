@@ -9,4 +9,5 @@ sealed interface VaultAction {
     data class OnCopyClick(val text: String): VaultAction
     data object OnCreateClick: VaultAction
     data class OnEditClick(val id: Long): VaultAction
+    data object OnToggleTheme: VaultAction
 }
