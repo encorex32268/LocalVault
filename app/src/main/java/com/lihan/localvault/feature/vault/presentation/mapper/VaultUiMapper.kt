@@ -1,6 +1,7 @@
 package com.lihan.localvault.feature.vault.presentation.mapper
 
 import com.lihan.localvault.core.domain.Vault
+import com.lihan.localvault.core.presentation.util.toFormattedDateTime
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 
 fun Vault.toUi(): VaultUi {
@@ -10,6 +11,7 @@ fun Vault.toUi(): VaultUi {
         color = color,
         title = title,
         updatedAt = updatedAt,
+        formattedUpdatedAt = updatedAt.toFormattedDateTime(),
         category = category
     )
 }

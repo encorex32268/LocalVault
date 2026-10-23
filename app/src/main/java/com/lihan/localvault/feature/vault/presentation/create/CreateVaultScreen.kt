@@ -1,38 +1,474 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.lihan.localvault.feature.vault.presentation.create
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.fromColorLong
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lihan.localvault.R
+import com.lihan.localvault.core.domain.VaultCategory
+import com.lihan.localvault.core.presentation.ui.theme.Background
+import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
+import com.lihan.localvault.core.presentation.ui.theme.OnBackground
+import com.lihan.localvault.core.presentation.ui.theme.Placeholder
+import com.lihan.localvault.core.presentation.ui.theme.Primary
+import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
+import com.lihan.localvault.core.presentation.ui.theme.VaultColors
+import com.lihan.localvault.core.presentation.util.ObserveAsEvents
+import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
+import com.lihan.localvault.feature.vault.presentation.vault.VaultAction
+import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AccountVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.AddressVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.NoteVaultTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.create.AccountVaultCreateTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.create.AddressVaultCreateTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.create.NoteVaultCreateTextField
+import com.lihan.localvault.feature.vault.presentation.vault.components.textfields.create.VaultFieldType
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateVaultRoot(
-    viewModel: CreateVaultViewModel = viewModel()
+    vaultId: Long? = null,
+    viewModel: CreateVaultViewModel = koinViewModel(),
+    onBack: () -> Unit = {}
 ) {
+    LaunchedEffect(vaultId) {
+        viewModel.onAction(CreateVaultAction.OnInit(vaultId))
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
+    @Suppress("DEPRECATION")
+    val clipboardManager = LocalClipboardManager.current
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is CreateVaultEvent.SaveSuccess -> onBack()
+        }
+    }
 
     CreateVaultScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                is CreateVaultAction.OnBackClick -> onBack()
+                is CreateVaultAction.OnPasteTitle -> {
+                    clipboardManager.getText()?.text?.let { clipText ->
+                        state.vaultTitle.edit {
+                            replace(0, length, clipText)
+                        }
+                    }
+                }
+                is CreateVaultAction.OnPasteField -> {
+                    clipboardManager.getText()?.text?.let { clipText ->
+                        when (action.fieldType) {
+                            VaultFieldType.ACCOUNT -> {
+                                (state.content as? VaultContentUi.Account)?.accountState?.edit {
+                                    replace(0, length, clipText)
+                                }
+                            }
+                            VaultFieldType.PASSWORD -> {
+                                (state.content as? VaultContentUi.Account)?.passwordState?.edit {
+                                    replace(0, length, clipText)
+                                }
+                            }
+                            VaultFieldType.ZIP_CODE -> {
+                                (state.content as? VaultContentUi.Address)?.zipCodeState?.edit {
+                                    replace(0, length, clipText)
+                                }
+                            }
+                            VaultFieldType.ADDRESS -> {
+                                (state.content as? VaultContentUi.Address)?.addressState?.edit {
+                                    replace(0, length, clipText)
+                                }
+                            }
+                            VaultFieldType.NOTE -> {
+                                (state.content as? VaultContentUi.Note)?.noteState?.edit {
+                                    replace(0, length, clipText)
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> viewModel.onAction(action)
+            }
+        }
     )
 }
 
 @Composable
 private fun CreateVaultScreen(
     state: CreateVaultState,
-    onAction: (CreateVaultAction) -> Unit,
-    modifier: Modifier = Modifier
+    onAction: (CreateVaultAction) -> Unit
 ) {
+    val cardBackgroundColor = state.color
+        .copy(alpha = 0.14f)
+        .compositeOver(SurfaceContainer)
 
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                ),
+               title = {
+                   Text(
+                       text = if (state.vaultId == null){
+                           stringResource(R.string.create)
+                       }else stringResource(R.string.edit),
+                       style = MaterialTheme.typography.titleLarge.copy(
+                           color = OnBackground,
+                           fontWeight = FontWeight.SemiBold,
+                           fontSize = 32.sp
+                       )
+                   )
+               },
+               navigationIcon = {
+                   IconButton(
+                       shape = RoundedCornerShape(16.dp),
+                       onClick = {
+                           onAction(CreateVaultAction.OnBackClick)
+                       }
+                   ) {
+                       Icon(
+                           imageVector = ImageVector.vectorResource(R.drawable.back),
+                           contentDescription = null,
+                           tint = OnBackground
+                       )
+                   }
+               },
+                actions = {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(end = 12.dp)
+                                .size(24.dp),
+                            color = state.color,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        IconButton(
+                            shape = RoundedCornerShape(16.dp),
+                            onClick = {
+                                onAction(CreateVaultAction.OnSaveClick)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.save),
+                                contentDescription = null,
+                                tint = OnBackground
+                            )
+                        }
+                    }
+                }
+            )
+        },
+        containerColor = cardBackgroundColor
+    ) { paddingValues ->
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(vertical = 8.dp,horizontal = 16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(VaultColors){ color ->
+                    val isSelected = state.color == color
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = color,
+                                shape = CircleShape
+                            )
+                            .size(36.dp)
+                            .border(
+                                width = 3.dp,
+                                color = if (isSelected){
+                                    OnBackground
+                                }else{
+                                    Color.Transparent
+                                },
+                                shape = CircleShape
+                            )
+                            .clickable(
+                                onClick = {
+                                    onAction(CreateVaultAction.OnSelectColor(color))
+                                }
+                            )
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                VaultCategory.entries.forEach {  category ->
+                    val isSelected = state.category == category
+                    OutlinedButton(
+                        onClick = {
+                            onAction(CreateVaultAction.OnSelectCategory(category))
+                        },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (isSelected) cardBackgroundColor else Color.Transparent,
+                            contentColor = if (isSelected){
+                                state.color
+                            }else Background
+                        )
+                    ) {
+                        Text(
+                            text = category.name,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                    }
+                }
+            }
+            Text(
+                text = stringResource(R.string.title),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    color = OnBackground
+                )
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(state.color.copy(alpha = 0.16f))
+                        .border(
+                            width = 1.dp,
+                            color = state.color.copy(alpha = 0.45f),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .clickable {
+                            onAction(CreateVaultAction.OnOpenIconPicker)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = ImageVector.vectorResource(state.iconResId),
+                        contentDescription = null,
+                        tint = state.color
+                    )
+                }
+
+                VaultTextField(
+                    modifier = Modifier.weight(1f),
+                    textFieldState = state.vaultTitle,
+                    placeholder = stringResource(R.string.title_placeholder),
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    trailingIcon = {
+                        IconButton(
+                            modifier = Modifier.size(32.dp),
+                            onClick = {
+                                onAction(CreateVaultAction.OnPasteTitle)
+                            }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = ImageVector.vectorResource(R.drawable.paste),
+                                contentDescription = null,
+                                tint = OnBackground
+                            )
+                        }
+                    }
+                )
+            }
+            when (val content = state.content) {
+                is VaultContentUi.Account -> {
+                    AccountVaultCreateTextField(
+                        accountTextFieldState = content.accountState,
+                        passwordTextFieldState = content.passwordState,
+                        onAccountPasteClick = {
+                            onAction(CreateVaultAction.OnPasteField(it))
+                        },
+                        onPasswordPasteClick = {
+                            onAction(CreateVaultAction.OnPasteField(it))
+                        }
+                    )
+                }
+                is VaultContentUi.Address -> {
+                    AddressVaultCreateTextField(
+                        zipTextFieldState = content.zipCodeState,
+                        addressTextFieldState = content.addressState,
+                        onZipCopyClick = {
+                            onAction(CreateVaultAction.OnPasteField(it))
+                        },
+                        onAddressCopyClick = {
+                            onAction(CreateVaultAction.OnPasteField(it))
+                        }
+                    )
+
+                }
+                is VaultContentUi.Note -> {
+                    NoteVaultCreateTextField(
+                        noteTextFieldState = content.noteState,
+                        onNotePasteClick = {
+                            onAction(CreateVaultAction.OnPasteField(it))
+                        }
+                    )
+                }
+                null -> Unit
+            }
+
+        }
+
+    }
+
+    if (state.isIconPickerOpen) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                onAction(CreateVaultAction.OnDismissIconPicker)
+            },
+            containerColor = SurfaceContainer,
+            contentColor = OnBackground,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            dragHandle = {
+                BottomSheetDefaults.DragHandle(
+                    color = Placeholder.copy(alpha = 0.6f)
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.select_icon),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = OnBackground
+                    )
+                )
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(5),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = 360.dp),
+                ) {
+                    itemsIndexed(IconsEnum.entries) { index, iconEnum ->
+                        val isSelected = state.iconIndex == index
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(
+                                    if (isSelected) state.color.copy(alpha = 0.2f)
+                                    else Color.Transparent
+                                )
+                                .border(
+                                    width = if (isSelected) 2.dp else 1.dp,
+                                    color = if (isSelected) state.color else Placeholder.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .clickable {
+                                    onAction(CreateVaultAction.OnSelectIcon(index))
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = ImageVector.vectorResource(iconEnum.resId),
+                                contentDescription = null,
+                                tint = if (isSelected) state.color else OnBackground
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun CreateVaultScreenPreview() {
     CreateVaultScreen(
-        state = CreateVaultState(),
+        state = CreateVaultState(
+            content = VaultContentUi.Account(
+                accountState = TextFieldState(),
+                passwordState = TextFieldState()
+            ),
+            isIconPickerOpen = false
+        ),
         onAction = {}
     )
 }

@@ -12,6 +12,7 @@ data class VaultUi(
     val color: Long,
     val title: String,
     val updatedAt: Long,
+    val formattedUpdatedAt: String = "",
     val category: VaultCategory,
     val isExpand: Boolean = false,
     val isLoadingContent: Boolean = false,

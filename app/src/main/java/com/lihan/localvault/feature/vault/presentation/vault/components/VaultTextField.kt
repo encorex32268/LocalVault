@@ -107,7 +107,9 @@ fun VaultTextField(
 @Composable
 private fun VaultTextFieldPreview() {
     LocalVaultTheme {
-
-
+        VaultTextField(
+            textFieldState = TextFieldState(),
+            placeholder = "PlaceHolder"
+        )
     }
 }
