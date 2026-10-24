@@ -1,6 +1,7 @@
 package com.lihan.localvault.core.di
 
 
+import com.lihan.localvault.core.biometric.BiometricPromptManager
 import com.lihan.localvault.core.data.datastore.DefaultAppDataStore
 import com.lihan.localvault.core.data.datastore.appDataStore
 import com.lihan.localvault.core.domain.datastore.AppDataStore
@@ -19,6 +20,7 @@ import org.koin.dsl.module
 val coreModule = module {
     single { androidContext().appDataStore }
     singleOf(::DefaultAppDataStore) { bind<AppDataStore>() }
+    singleOf(::BiometricPromptManager)
 
     single {
         Json {
