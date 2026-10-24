@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +67,7 @@ import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultItemCard
+import com.lihan.localvault.feature.vault.presentation.vault.components.VaultLimitCard
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTopAppBar
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -127,7 +129,17 @@ fun VaultRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                is VaultAction.OnCreateClick -> onNavigateToCreate()
+                is VaultAction.OnCreateClick -> {
+                    if (state.isLimitReached) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.vault_limit_reached, state.totalCount, state.maxVaultCount),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        onNavigateToCreate()
+                    }
+                }
                 is VaultAction.OnEditClick -> onNavigateToEdit(action.id)
                 is VaultAction.OnCopyClick -> {
                     clipboardManager.setText(AnnotatedString(action.text))
@@ -199,20 +211,32 @@ private fun VaultScreen(
                 }
             }
         } else {
-            FlowRow(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 12.dp)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                state.filteredItems.forEach { item ->
-                    VaultItemCard(
-                        vault = item,
-                        onAction = onAction
+                if (!state.isSearchActive) {
+                    VaultLimitCard(
+                        currentCount = state.totalCount,
+                        maxCount = state.maxVaultCount
                     )
+                }
+
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    state.filteredItems.forEach { item ->
+                        VaultItemCard(
+                            vault = item,
+                            onAction = onAction
+                        )
+                    }
                 }
             }
         }
