@@ -2,7 +2,10 @@
 
 package com.lihan.localvault.feature.vault.presentation.vault
 
+import android.annotation.SuppressLint
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,20 +27,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toColorLong
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.localvault.R
+import com.lihan.localvault.core.biometric.BiometricPromptManager
+import com.lihan.localvault.core.biometric.BiometricResult
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.Background
@@ -50,23 +61,67 @@ import com.lihan.localvault.core.presentation.ui.theme.Primary
 import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
+import com.lihan.localvault.core.presentation.util.ObserveAsEvents
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultItemCard
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTopAppBar
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import java.time.Instant
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun VaultRoot(
     viewModel: VaultViewModel = koinViewModel(),
+    biometricPromptManager: BiometricPromptManager = koinInject(),
     onNavigateToCreate: () -> Unit = {},
     onNavigateToEdit: (Long) -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    val currentActivity = LocalActivity.current as? FragmentActivity
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is VaultEvent.RequestBiometric -> {
+                val activity = currentActivity ?: (context as? FragmentActivity)
+                if (activity == null) {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.error_activity_not_found),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@ObserveAsEvents
+                }
+                biometricPromptManager.promptBiometric(
+                    activity = activity,
+                    title = context.getString(R.string.biometric_prompt_title),
+                    subtitle = context.getString(R.string.biometric_prompt_subtitle)
+                ) { result ->
+                    if (result is BiometricResult.Success) {
+                        viewModel.onAction(VaultAction.OnBiometricSuccess(event.vaultId))
+                    }
+                }
+            }
+        }
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_STOP) {
+                viewModel.onAction(VaultAction.OnCollapseAll)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     VaultScreen(
         state = state,

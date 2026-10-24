@@ -8,7 +8,8 @@ data class VaultState(
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
     val deleteTargetId: Long? = null,
-    val isDarkTheme: Boolean = true
+    val isDarkTheme: Boolean = true,
+    val isAuthenticatedSession: Boolean = false
 ) {
     val filteredItems: List<VaultUi>
         get() = if (searchQuery.isBlank()) {

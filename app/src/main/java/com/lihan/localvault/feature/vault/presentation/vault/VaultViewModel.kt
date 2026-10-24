@@ -2,25 +2,32 @@ package com.lihan.localvault.feature.vault.presentation.vault
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.localvault.core.biometric.BiometricAvailability
+import com.lihan.localvault.core.biometric.BiometricPromptManager
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class VaultViewModel(
     private val vaultRepository: VaultRepository,
-    private val appDataStore: AppDataStore
+    private val appDataStore: AppDataStore,
+    private val biometricPromptManager: BiometricPromptManager
 ): ViewModel() {
 
+    private val _events = Channel<VaultEvent>()
+    val events = _events.receiveAsFlow()
 
     private var hasLoadedInitialData = false
 
@@ -40,7 +47,11 @@ class VaultViewModel(
 
     fun onAction(action: VaultAction) {
         when (action) {
-            is VaultAction.OnToggleExpand -> toggleExpand(action.id)
+            is VaultAction.OnToggleExpand -> handleToggleExpand(action.id)
+            is VaultAction.OnBiometricSuccess -> {
+                _state.update { it.copy(isAuthenticatedSession = true) }
+                toggleExpand(action.id)
+            }
             is VaultAction.OnDeleteClick -> {
                 _state.update { it.copy(deleteTargetId = action.id) }
             }
@@ -75,9 +86,44 @@ class VaultViewModel(
             is VaultAction.OnClearSearch -> {
                 _state.update { it.copy(searchQuery = "") }
             }
+            is VaultAction.OnAuthenticatedSession -> {
+                _state.update { it.copy(isAuthenticatedSession = true) }
+            }
+            is VaultAction.OnEndSession -> {
+                _state.update { current ->
+                    current.copy(
+                        isAuthenticatedSession = false,
+                        items = current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
+                    )
+                }
+            }
+            is VaultAction.OnCollapseAll -> collapseAll()
             is VaultAction.OnCopyClick,
             is VaultAction.OnCreateClick,
             is VaultAction.OnEditClick -> Unit
+        }
+    }
+
+    private fun handleToggleExpand(id: Long) {
+        val currentItem = _state.value.items.find { it.id == id } ?: return
+
+        if (currentItem.isExpand) {
+            toggleExpand(id)
+            return
+        }
+
+        if (_state.value.isAuthenticatedSession) {
+            toggleExpand(id)
+            return
+        }
+
+        val availability = biometricPromptManager.checkBiometricAvailability()
+        if (availability == BiometricAvailability.READY) {
+            viewModelScope.launch {
+                _events.send(VaultEvent.RequestBiometric(id))
+            }
+        } else {
+            toggleExpand(id)
         }
     }
 
@@ -105,6 +151,15 @@ class VaultViewModel(
 
         updateItem(id) { it.copy(isExpand = true, isLoadingContent = true) }
         loadVaultContent(id)
+    }
+
+    private fun collapseAll() {
+        _state.update { current ->
+            current.copy(
+                isAuthenticatedSession = false,
+                items = current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
+            )
+        }
     }
 
     private fun loadVaultContent(id: Long) {
