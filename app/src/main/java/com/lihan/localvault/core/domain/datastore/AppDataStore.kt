@@ -13,4 +13,8 @@ interface AppDataStore {
     val lastUsedIconIndex: Flow<Int?>
 
     suspend fun saveLastUsedVaultStyle(color: Long, iconIndex: Int)
+
+    val isLimitCardCollapsed: Flow<Boolean>
+    suspend fun setLimitCardCollapsed(isCollapsed: Boolean)
+    suspend fun toggleLimitCardCollapsed()
 }

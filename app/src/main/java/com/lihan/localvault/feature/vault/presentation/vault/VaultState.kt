@@ -12,7 +12,8 @@ data class VaultState(
     val deleteTargetId: Long? = null,
     val isDarkTheme: Boolean = true,
     val isAuthenticatedSession: Boolean = false,
-    val maxVaultCount: Int = MAX_FREE_VAULTS
+    val maxVaultCount: Int = MAX_FREE_VAULTS,
+    val isLimitCardCollapsed: Boolean = false
 ) {
     val totalCount: Int get() = items.size
     val isLimitReached: Boolean get() = items.size >= maxVaultCount

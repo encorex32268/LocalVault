@@ -11,16 +11,16 @@ This skill consolidates patterns for setting up a robust, offline-first data lay
 
 ```bash
 # Set up Room Database
-python3 .agents/skills/android-data-layer/scripts/setup_room.py
+python3 .agent/skills/android-data-layer/scripts/setup_room.py
 
 # Set up DataStore
-python3 .agents/skills/android-data-layer/scripts/setup_datastore.py
+python3 .agent/skills/android-data-layer/scripts/setup_datastore.py
 
 # Set up Networking (Ktor HTTP client + safeCall + DataError)
-python3 .agents/skills/android-data-layer/scripts/setup_networking.py
+python3 .agent/skills/android-data-layer/scripts/setup_networking.py
 
 # Include connectivity monitoring (NetworkMonitor + ACCESS_NETWORK_STATE permission)
-python3 .agents/skills/android-data-layer/scripts/setup_networking.py --with-monitor
+python3 .agent/skills/android-data-layer/scripts/setup_networking.py --with-monitor
 ```
 
 ## 1. Architecture Overview
@@ -224,27 +224,45 @@ object DatabaseFactory {
 
 ```kotlin
 interface AppDataStore {
-    val isFirstTime: Flow<Boolean>
-    suspend fun setIsFirstTime(isFirstTime: Boolean)
+    val isDarkTheme: Flow<Boolean>
+    suspend fun setDarkTheme(isDark: Boolean)
+    suspend fun toggleTheme()
 }
 ```
 
 ### Implementation
 
-Resilient data reading handles corrupted files by catching `IOException`.
+Resilient data reading handles corrupted files by catching `IOException` once via a centralized `safePreferencesFlow`.
 
 ```kotlin
 val Context.appDataStore: DataStore<Preferences> by preferencesDataStore(name = "app_preferences")
 
 class DefaultAppDataStore(private val dataStore: DataStore<Preferences>) : AppDataStore {
-    private companion object { val KEY_IS_FIRST_TIME = booleanPreferencesKey("is_first_time") }
+    private companion object { 
+        val KEY_IS_DARK_THEME = booleanPreferencesKey("is_dark_theme") 
+    }
 
-    override val isFirstTime: Flow<Boolean> = dataStore.data
-        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
-        .map { it[KEY_IS_FIRST_TIME] ?: true }
+    private val safePreferencesFlow: Flow<Preferences> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
 
-    override suspend fun setIsFirstTime(isFirstTime: Boolean) {
-        dataStore.edit { it[KEY_IS_FIRST_TIME] = isFirstTime }
+    override val isDarkTheme: Flow<Boolean> = safePreferencesFlow
+        .map { it[KEY_IS_DARK_THEME] ?: true }
+
+    override suspend fun setDarkTheme(isDark: Boolean) {
+        dataStore.edit { it[KEY_IS_DARK_THEME] = isDark }
+    }
+
+    override suspend fun toggleTheme() {
+        dataStore.edit {
+            val current = it[KEY_IS_DARK_THEME] ?: true
+            it[KEY_IS_DARK_THEME] = !current
+        }
     }
 }
 ```
@@ -257,12 +275,16 @@ val coreModule = module {
     singleOf(::DefaultAppDataStore) { bind<AppDataStore>() }
 }
 
-class FakeAppDataStore(initialIsFirstTime: Boolean = true) : AppDataStore {
-    private val _isFirstTime = MutableStateFlow(initialIsFirstTime)
-    override val isFirstTime: Flow<Boolean> = _isFirstTime.asStateFlow()
+class FakeAppDataStore(initialDarkTheme: Boolean = true) : AppDataStore {
+    private val _isDarkTheme = MutableStateFlow(initialDarkTheme)
+    override val isDarkTheme: Flow<Boolean> = _isDarkTheme.asStateFlow()
 
-    override suspend fun setIsFirstTime(isFirstTime: Boolean) {
-        _isFirstTime.value = isFirstTime
+    override suspend fun setDarkTheme(isDark: Boolean) {
+        _isDarkTheme.value = isDark
+    }
+
+    override suspend fun toggleTheme() {
+        _isDarkTheme.value = !_isDarkTheme.value
     }
 }
 ```

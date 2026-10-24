@@ -218,7 +218,9 @@ private fun VaultScreen(
                 if (!state.isSearchActive) {
                     VaultLimitCard(
                         currentCount = state.totalCount,
-                        maxCount = state.maxVaultCount
+                        maxCount = state.maxVaultCount,
+                        isCollapsed = state.isLimitCardCollapsed,
+                        onToggleCollapse = { onAction(VaultAction.OnToggleLimitCardCollapse) }
                     )
                 }
 

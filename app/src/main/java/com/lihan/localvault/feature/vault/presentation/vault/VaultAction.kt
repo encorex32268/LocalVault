@@ -11,6 +11,7 @@ sealed interface VaultAction {
     data object OnCreateClick: VaultAction
     data class OnEditClick(val id: Long): VaultAction
     data object OnToggleTheme: VaultAction
+    data object OnToggleLimitCardCollapse: VaultAction
     data class OnSearchQueryChange(val query: String): VaultAction
     data object OnToggleSearch: VaultAction
     data object OnClearSearch: VaultAction

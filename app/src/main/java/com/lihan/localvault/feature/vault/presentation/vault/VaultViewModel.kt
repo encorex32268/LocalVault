@@ -36,6 +36,7 @@ class VaultViewModel(
         if (!hasLoadedInitialData) {
             observeVaultItems()
             observeTheme()
+            observeLimitCardCollapsed()
             hasLoadedInitialData = true
         }
     }
@@ -68,6 +69,11 @@ class VaultViewModel(
             is VaultAction.OnToggleTheme -> {
                 viewModelScope.launch {
                     appDataStore.toggleTheme()
+                }
+            }
+            is VaultAction.OnToggleLimitCardCollapse -> {
+                viewModelScope.launch {
+                    appDataStore.toggleLimitCardCollapsed()
                 }
             }
             is VaultAction.OnDelete -> deleteVault(action.id)
@@ -131,6 +137,14 @@ class VaultViewModel(
         appDataStore.isDarkTheme
             .onEach { isDark ->
                 _state.update { it.copy(isDarkTheme = isDark) }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeLimitCardCollapsed() {
+        appDataStore.isLimitCardCollapsed
+            .onEach { isCollapsed ->
+                _state.update { it.copy(isLimitCardCollapsed = isCollapsed) }
             }
             .launchIn(viewModelScope)
     }

@@ -6,22 +6,12 @@ from pathlib import Path
 
 APP_DATA_STORE_INTERFACE = """package __PACKAGE__.core.domain.datastore
 
-import kotlinx.coroutines.flow.Flow
-
 /**
  * Domain contract for app key-value persistence.
  * Pure Kotlin interface decoupled from Android/DataStore framework.
  */
 interface AppDataStore {
-    /**
-     * Example boolean flow (e.g. app first-time launch / onboarding flag).
-     */
-    val isFirstTime: Flow<Boolean>
-
-    /**
-     * Updates the boolean setting.
-     */
-    suspend fun setIsFirstTime(isFirstTime: Boolean)
+    // Define key-value flows and mutation methods here
 }
 """
 
@@ -30,7 +20,6 @@ DEFAULT_APP_DATA_STORE = """package __PACKAGE__.core.data.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -47,10 +36,10 @@ class DefaultAppDataStore(
 ) : AppDataStore {
 
     private companion object {
-        val KEY_IS_FIRST_TIME = booleanPreferencesKey("is_first_time")
+        // Define PreferenceKeys here
     }
 
-    override val isFirstTime: Flow<Boolean> = dataStore.data
+    private val safePreferencesFlow: Flow<Preferences> = dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -58,15 +47,6 @@ class DefaultAppDataStore(
                 throw exception
             }
         }
-        .map { preferences ->
-            preferences[KEY_IS_FIRST_TIME] ?: true
-        }
-
-    override suspend fun setIsFirstTime(isFirstTime: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[KEY_IS_FIRST_TIME] = isFirstTime
-        }
-    }
 }
 """
 
