@@ -80,7 +80,7 @@ class CreateVaultViewModel(
             is CreateVaultAction.OnAddField -> {
                 val newField = VaultFieldUi(
                     type = action.type,
-                    label = ""
+                    label = action.label
                 )
                 _state.update {
                     it.copy(

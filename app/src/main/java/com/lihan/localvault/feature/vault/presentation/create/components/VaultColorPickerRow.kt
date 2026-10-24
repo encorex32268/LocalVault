@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +28,7 @@ fun VaultColorPickerRow(
     modifier: Modifier = Modifier,
     colors: List<Color> = VaultColors
 ) {
+    val itemShape = RoundedCornerShape(10.dp)
     LazyRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -36,20 +37,20 @@ fun VaultColorPickerRow(
             val isSelected = selectedColor == color
             Box(
                 modifier = Modifier
-                    .clip(CircleShape)
+                    .clip(itemShape)
                     .background(
                         color = color,
-                        shape = CircleShape
+                        shape = itemShape
                     )
                     .size(36.dp)
                     .border(
-                        width = 3.dp,
+                        width = 2.5.dp,
                         color = if (isSelected) {
                             MaterialTheme.colorScheme.onBackground
                         } else {
                             Color.Transparent
                         },
-                        shape = CircleShape
+                        shape = itemShape
                     )
                     .clickable {
                         onColorSelect(color)

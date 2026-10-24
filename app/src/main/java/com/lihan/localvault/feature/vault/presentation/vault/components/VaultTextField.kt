@@ -50,6 +50,7 @@ fun VaultTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     trailingIcon: @Composable (() -> Unit)?=null,
     outputTransformation: OutputTransformation? = null,
+    inputTransformation: InputTransformation? = null,
     enabled: Boolean = true,
 ) {
 
@@ -59,6 +60,7 @@ fun VaultTextField(
         keyboardOptions = keyboardOptions,
         onKeyboardAction = onKeyboardAction,
         outputTransformation = outputTransformation,
+        inputTransformation = inputTransformation,
         lineLimits = lineLimits,
         cursorBrush = SolidColor(Primary),
         decorator = { innerField ->

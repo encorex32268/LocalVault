@@ -17,10 +17,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
@@ -160,11 +162,21 @@ private fun CreateVaultScreen(
         }
     }
 
+    val context = LocalContext.current
     if (state.isAddFieldMenuOpen) {
         AddFieldBottomSheet(
             onDismiss = { onAction(CreateVaultAction.OnDismissAddFieldMenu) },
             onAddField = { fieldType ->
-                onAction(CreateVaultAction.OnAddField(fieldType))
+                val label = when (fieldType) {
+                    FieldType.SINGLE_LINE -> if (state.fields.none { it.type == FieldType.SINGLE_LINE }) {
+                        context.getString(R.string.account)
+                    } else {
+                        context.getString(R.string.single_line_input)
+                    }
+                    FieldType.PASSWORD -> context.getString(R.string.password)
+                    FieldType.MULTI_LINE -> context.getString(R.string.note)
+                }
+                onAction(CreateVaultAction.OnAddField(fieldType, label))
             }
         )
     }
@@ -188,8 +200,8 @@ private fun CreateVaultScreenPreview() {
         CreateVaultScreen(
             state = CreateVaultState(
                 fields = listOf(
-                    VaultFieldUi(type = FieldType.SINGLE_LINE, label = ""),
-                    VaultFieldUi(type = FieldType.PASSWORD, label = "")
+                    VaultFieldUi(type = FieldType.SINGLE_LINE, label = "帳號"),
+                    VaultFieldUi(type = FieldType.PASSWORD, label = "密碼")
                 )
             ),
             onAction = {}

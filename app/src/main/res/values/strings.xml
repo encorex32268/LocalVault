@@ -38,6 +38,8 @@
     <string name="biometric_prompt_subtitle">Verify your identity to view vault details</string>
     <string name="error_activity_not_found">Unable to authenticate: Activity not found</string>
     <string name="free_plan">Free Plan</string>
+    <string name="field_name">Field Name</string>
+    <string name="field_value">Content</string>
     <string name="vault_limit_count">%1$d/%2$d</string>
     <string name="vault_limit_reached">Free plan limit reached (%1$d/%2$d)</string>
 </resources>

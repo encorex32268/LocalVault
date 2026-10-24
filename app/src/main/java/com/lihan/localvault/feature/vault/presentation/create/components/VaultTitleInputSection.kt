@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -82,6 +84,7 @@ fun VaultTitleInputSection(
             VaultTextField(
                 modifier = Modifier.weight(1f),
                 textFieldState = titleState,
+                inputTransformation = InputTransformation.maxLength(30),
                 placeholder = stringResource(R.string.title_placeholder),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 trailingIcon = {
