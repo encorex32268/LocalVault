@@ -15,14 +15,28 @@ android {
         applicationId = "com.lihan.localvault"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("localvault_keystore.jks")
+            storePassword = "REDACTED"
+            keyAlias = "lihan_localvault"
+            keyPassword = "REDACTED"
+        }
+    }
+
     buildTypes {
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+
+            signingConfig = signingConfigs.getByName("release")
+
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
