@@ -215,7 +215,7 @@ private fun VaultScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (!state.isSearchActive) {
+                if (!state.isSearchActive && state.isLimitEnabled) {
                     VaultLimitCard(
                         currentCount = state.totalCount,
                         maxCount = state.maxVaultCount,
