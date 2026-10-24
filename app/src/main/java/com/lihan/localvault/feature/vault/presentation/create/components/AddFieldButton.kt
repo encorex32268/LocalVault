@@ -22,9 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 
 @Composable
 fun AddFieldButton(
@@ -36,24 +33,24 @@ fun AddFieldButton(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = SurfaceContainer,
-            contentColor = OnBackground
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onBackground
         ),
-        border = BorderStroke(1.dp, Placeholder.copy(alpha = 0.35f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)),
         contentPadding = PaddingValues(16.dp)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.add),
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = OnBackground
+            tint = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.width(8.dp))
         Text(
             text = stringResource(R.string.add_field),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold,
-                color = OnBackground
+                color = MaterialTheme.colorScheme.onBackground
             )
         )
     }

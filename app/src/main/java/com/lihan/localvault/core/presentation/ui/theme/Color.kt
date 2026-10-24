@@ -1,7 +1,5 @@
 package com.lihan.localvault.core.presentation.ui.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val Primary = Color(0xFF00F5D4)
@@ -17,22 +15,6 @@ val LightBackground = Color(0xFFF6F8FA)
 val LightSurfaceContainer = Color(0xFFFFFFFF)
 val LightOnBackground = Color(0xFF1F2328)
 val LightPlaceholder = Color(0xFF6E7781)
-
-val Background: Color
-    @Composable
-    get() = MaterialTheme.colorScheme.background
-
-val SurfaceContainer: Color
-    @Composable
-    get() = MaterialTheme.colorScheme.surfaceContainer
-
-val OnBackground: Color
-    @Composable
-    get() = MaterialTheme.colorScheme.onBackground
-
-val Placeholder: Color
-    @Composable
-    get() = MaterialTheme.colorScheme.outline
 
 val VaultCoralRed = Color(0xFFFF5E7E)
 val VaultOrange = Color(0xFFFF8E53)

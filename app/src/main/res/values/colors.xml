@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Light Theme Splash Colors -->
+    <color name="splash_background">#FFF6F8FA</color>
+    <color name="splash_keyhole">#FFF6F8FA</color>
 </resources>

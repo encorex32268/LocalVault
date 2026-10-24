@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="1024"
+    android:viewportHeight="1024">
+    <group
+        android:pivotX="512"
+        android:pivotY="512"
+        android:scaleX="0.65"
+        android:scaleY="0.65">
+        <!-- Main Gradient Shield -->
+        <path android:pathData="M512,164 L796,272 C818,280 832,301 832,325 L832,504 C832,696 694,826 528,882 C518,885 506,885 496,882 C330,826 192,696 192,504 L192,325 C192,301 206,280 228,272 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:endX="832"
+                    android:endY="885"
+                    android:startX="192"
+                    android:startY="164"
+                    android:type="linear">
+                    <item
+                        android:color="#FF00F5D4"
+                        android:offset="0.0" />
+                    <item
+                        android:color="#FF22B8F0"
+                        android:offset="0.5" />
+                    <item
+                        android:color="#FF2563EB"
+                        android:offset="1.0" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Inner Shield Accent Line -->
+        <path
+            android:fillColor="#00000000"
+            android:pathData="M512,246 L732,330 L732,500 C732,646 628,750 512,796 C396,750 292,646 292,500 L292,330 Z"
+            android:strokeWidth="24"
+            android:strokeAlpha="0.3"
+            android:strokeColor="@color/splash_keyhole"
+            android:strokeLineJoin="round" />
+
+        <!-- Keyhole Center (Cutout effect) -->
+        <path
+            android:fillColor="@color/splash_keyhole"
+            android:pathData="M512,400 A68,68 0 1,0 512,536 A68,68 0 1,0 512,400 Z" />
+        <path
+            android:fillColor="@color/splash_keyhole"
+            android:pathData="M478,504 L458,628 C455,646 469,662 487,662 L537,662 C555,662 569,646 566,628 L546,504 Z" />
+    </group>
+</vector>

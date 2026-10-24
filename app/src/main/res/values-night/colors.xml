@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark / Night Theme Splash Colors -->
+    <color name="splash_background">#FF0D1117</color>
+    <color name="splash_keyhole">#FF0D1117</color>
+</resources>

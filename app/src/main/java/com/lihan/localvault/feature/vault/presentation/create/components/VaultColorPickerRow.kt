@@ -12,12 +12,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 
@@ -45,7 +45,7 @@ fun VaultColorPickerRow(
                     .border(
                         width = 3.dp,
                         color = if (isSelected) {
-                            OnBackground
+                            MaterialTheme.colorScheme.onBackground
                         } else {
                             Color.Transparent
                         },

@@ -27,10 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.Primary
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 
 @Composable
@@ -45,10 +42,10 @@ fun VaultLimitCard(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = SurfaceContainer,
+        color = MaterialTheme.colorScheme.surfaceContainer,
         border = BorderStroke(
             width = 1.dp,
-            color = if (isLimitReached) VaultCoralRed.copy(alpha = 0.5f) else SurfaceContainer
+            color = if (isLimitReached) VaultCoralRed.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceContainer
         )
     ) {
         Column(
@@ -74,7 +71,7 @@ fun VaultLimitCard(
                         text = stringResource(R.string.free_plan),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.SemiBold,
-                            color = OnBackground,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 14.sp
                         )
                     )
@@ -96,7 +93,7 @@ fun VaultLimitCard(
                     .fillMaxWidth()
                     .height(6.dp),
                 color = if (isLimitReached) VaultCoralRed else Primary,
-                trackColor = Placeholder.copy(alpha = 0.2f),
+                trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                 strokeCap = StrokeCap.Round
             )
         }

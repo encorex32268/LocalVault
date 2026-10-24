@@ -37,9 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 
 @Composable
@@ -53,12 +50,12 @@ fun IconPickerBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
-        containerColor = SurfaceContainer,
-        contentColor = OnBackground,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         dragHandle = {
             BottomSheetDefaults.DragHandle(
-                color = Placeholder.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
             )
         }
     ) {
@@ -73,7 +70,7 @@ fun IconPickerBottomSheet(
                 text = stringResource(R.string.select_icon),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
-                    color = OnBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
 
@@ -100,7 +97,7 @@ fun IconPickerBottomSheet(
                             )
                             .border(
                                 width = if (isSelected) 2.dp else 1.dp,
-                                color = if (isSelected) color else Placeholder.copy(alpha = 0.3f),
+                                color = if (isSelected) color else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
                                 shape = RoundedCornerShape(16.dp)
                             )
                             .clickable {
@@ -112,7 +109,7 @@ fun IconPickerBottomSheet(
                             modifier = Modifier.size(28.dp),
                             imageVector = ImageVector.vectorResource(iconEnum.resId),
                             contentDescription = null,
-                            tint = if (isSelected) color else OnBackground
+                            tint = if (isSelected) color else MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }

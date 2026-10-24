@@ -30,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
 
@@ -51,7 +50,7 @@ fun VaultTitleInputSection(
             text = stringResource(R.string.title),
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.SemiBold,
-                color = OnBackground
+                color = MaterialTheme.colorScheme.onBackground
             )
         )
         Row(
@@ -94,7 +93,7 @@ fun VaultTitleInputSection(
                             modifier = Modifier.size(24.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.paste),
                             contentDescription = null,
-                            tint = OnBackground
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }

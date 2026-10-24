@@ -52,14 +52,10 @@ import com.lihan.localvault.core.biometric.BiometricPromptManager
 import com.lihan.localvault.core.biometric.BiometricResult
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
-import com.lihan.localvault.core.presentation.ui.theme.Background
 import com.lihan.localvault.core.presentation.ui.theme.DarkBackground
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.Primary
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
@@ -158,7 +154,7 @@ private fun VaultScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Background,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             VaultTopAppBar(
                 isSearchActive = state.isSearchActive,
@@ -199,12 +195,12 @@ private fun VaultScreen(
                         modifier = Modifier.size(48.dp),
                         imageVector = ImageVector.vectorResource(R.drawable.search),
                         contentDescription = null,
-                        tint = Placeholder.copy(alpha = 0.5f)
+                        tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                     )
                     Text(
                         text = stringResource(R.string.no_vaults_found),
                         style = MaterialTheme.typography.bodyLarge.copy(
-                            color = Placeholder,
+                            color = MaterialTheme.colorScheme.outline,
                             fontWeight = FontWeight.Medium
                         )
                     )
@@ -253,14 +249,14 @@ private fun VaultScreen(
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold
                     ),
-                    color = OnBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             },
             text = {
                 Text(
                     text = stringResource(R.string.delete_dialog_message),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = OnBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             },
             confirmButton = {
@@ -283,11 +279,11 @@ private fun VaultScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.cancel),
-                        color = Placeholder
+                        color = MaterialTheme.colorScheme.outline
                     )
                 }
             },
-            containerColor = SurfaceContainer,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
             shape = RoundedCornerShape(16.dp)
         )
     }

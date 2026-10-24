@@ -19,7 +19,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 
 
 @Composable
@@ -33,7 +32,7 @@ fun SingleLineFieldCardItem(
             Text(
                 text = label,
                 fontWeight = FontWeight.SemiBold,
-                color = OnBackground,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -52,7 +51,7 @@ fun SingleLineFieldCardItem(
                         modifier = Modifier.size(22.dp),
                         imageVector = ImageVector.vectorResource(R.drawable.copy),
                         contentDescription = null,
-                        tint = OnBackground
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

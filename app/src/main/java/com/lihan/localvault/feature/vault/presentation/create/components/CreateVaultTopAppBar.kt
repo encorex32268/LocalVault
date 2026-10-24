@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 
 @Composable
@@ -50,9 +49,9 @@ fun CreateVaultTopAppBar(
                     stringResource(R.string.edit)
                 },
                 style = MaterialTheme.typography.titleLarge.copy(
-                    color = OnBackground,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 32.sp
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 28.sp
                 )
             )
         },
@@ -64,7 +63,7 @@ fun CreateVaultTopAppBar(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.back),
                     contentDescription = null,
-                    tint = OnBackground
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         },
@@ -85,7 +84,7 @@ fun CreateVaultTopAppBar(
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.save),
                         contentDescription = null,
-                        tint = OnBackground
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

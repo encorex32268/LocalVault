@@ -10,6 +10,7 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.vault.components.PasswordOutputTransformation
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
@@ -66,7 +65,7 @@ fun CreateVaultFieldItem(
                                             ImageVector.vectorResource(R.drawable.eye_off)
                                         },
                                         contentDescription = null,
-                                        tint = OnBackground
+                                        tint = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
                                 IconButton(
@@ -78,7 +77,7 @@ fun CreateVaultFieldItem(
                                         modifier = Modifier.size(22.dp),
                                         imageVector = ImageVector.vectorResource(R.drawable.paste),
                                         contentDescription = null,
-                                        tint = OnBackground
+                                        tint = MaterialTheme.colorScheme.onBackground
                                     )
                                 }
                             }
@@ -100,7 +99,7 @@ fun CreateVaultFieldItem(
                                     modifier = Modifier.size(22.dp),
                                     imageVector = ImageVector.vectorResource(R.drawable.paste),
                                     contentDescription = null,
-                                    tint = OnBackground
+                                    tint = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }
@@ -121,7 +120,7 @@ fun CreateVaultFieldItem(
                                     modifier = Modifier.size(22.dp),
                                     imageVector = ImageVector.vectorResource(R.drawable.paste),
                                     contentDescription = null,
-                                    tint = OnBackground
+                                    tint = MaterialTheme.colorScheme.onBackground
                                 )
                             }
                         }
@@ -139,7 +138,7 @@ fun CreateVaultFieldItem(
                 modifier = Modifier.size(20.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.trash),
                 contentDescription = stringResource(R.string.delete),
-                tint = Placeholder
+                tint = MaterialTheme.colorScheme.outline
             )
         }
     }

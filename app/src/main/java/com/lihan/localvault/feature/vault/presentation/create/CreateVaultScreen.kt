@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
 import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldBottomSheet
 import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldButton
@@ -86,7 +86,7 @@ private fun CreateVaultScreen(
 ) {
     val cardBackgroundColor = state.color
         .copy(alpha = 0.14f)
-        .compositeOver(SurfaceContainer)
+        .compositeOver(MaterialTheme.colorScheme.surfaceContainer)
 
     val focusManager = LocalFocusManager.current
 

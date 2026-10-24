@@ -44,9 +44,6 @@ import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
@@ -63,7 +60,7 @@ fun VaultItemCard(
     val accentColor = Color.fromColorLong(vault.color)
     val cardBackgroundColor = accentColor
         .copy(alpha = if (vault.isExpand) 0.14f else 0.08f)
-        .compositeOver(SurfaceContainer)
+        .compositeOver(MaterialTheme.colorScheme.surfaceContainer)
 
     Surface(
         modifier = modifier,
@@ -72,7 +69,7 @@ fun VaultItemCard(
             onAction(VaultAction.OnToggleExpand(vault.id))
         },
         color = cardBackgroundColor,
-        contentColor = OnBackground,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         border = BorderStroke(
             width = 1.dp,
             brush = Brush.linearGradient(
@@ -124,7 +121,7 @@ fun VaultItemCard(
                         Text(
                             modifier = Modifier.basicMarquee(),
                             text = vault.title,
-                            color = OnBackground,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.SemiBold
                             ),
@@ -133,7 +130,7 @@ fun VaultItemCard(
                         if (vault.formattedUpdatedAt.isNotBlank()) {
                             Text(
                                 text = vault.formattedUpdatedAt,
-                                color = Placeholder,
+                                color = MaterialTheme.colorScheme.outline,
                                 style = MaterialTheme.typography.labelSmall
                             )
                         }
@@ -141,7 +138,7 @@ fun VaultItemCard(
                 } else {
                     Text(
                         text = vault.title,
-                        color = OnBackground,
+                        color = MaterialTheme.colorScheme.onBackground,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.SemiBold
                         ),

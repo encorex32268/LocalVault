@@ -43,10 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.Primary
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 
 @Composable
 fun VaultTopAppBar(
@@ -85,7 +82,7 @@ fun VaultTopAppBar(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.back),
                             contentDescription = stringResource(R.string.close_search),
-                            tint = OnBackground
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -95,7 +92,7 @@ fun VaultTopAppBar(
                             .fillMaxWidth()
                             .height(44.dp)
                             .background(
-                                color = SurfaceContainer,
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .padding(horizontal = 12.dp),
@@ -105,7 +102,7 @@ fun VaultTopAppBar(
                             Text(
                                 text = stringResource(R.string.search_placeholder),
                                 style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = Placeholder,
+                                    color = MaterialTheme.colorScheme.outline,
                                     fontSize = 16.sp
                                 )
                             )
@@ -118,7 +115,7 @@ fun VaultTopAppBar(
                                 .fillMaxWidth()
                                 .focusRequester(focusRequester),
                             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                                color = OnBackground,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Normal
                             ),
@@ -143,7 +140,7 @@ fun VaultTopAppBar(
                                 modifier = Modifier.size(20.dp),
                                 imageVector = ImageVector.vectorResource(R.drawable.x),
                                 contentDescription = stringResource(R.string.clear_search),
-                                tint = OnBackground
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
                     }
@@ -157,7 +154,7 @@ fun VaultTopAppBar(
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = OnBackground,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 28.sp
                         )
                     )
@@ -171,7 +168,7 @@ fun VaultTopAppBar(
                             modifier = Modifier.size(24.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.search),
                             contentDescription = stringResource(R.string.search),
-                            tint = OnBackground
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     IconButton(
@@ -186,7 +183,7 @@ fun VaultTopAppBar(
                             contentDescription = stringResource(
                                 if (isDarkTheme) R.string.switch_to_light_mode else R.string.switch_to_dark_mode
                             ),
-                            tint = OnBackground
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },

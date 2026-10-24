@@ -33,9 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
-import com.lihan.localvault.core.presentation.ui.theme.SurfaceContainer
 
 @Composable
 fun AddFieldBottomSheet(
@@ -46,12 +43,12 @@ fun AddFieldBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = modifier,
-        containerColor = SurfaceContainer,
-        contentColor = OnBackground,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         dragHandle = {
             BottomSheetDefaults.DragHandle(
-                color = Placeholder.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.6f)
             )
         }
     ) {
@@ -66,7 +63,7 @@ fun AddFieldBottomSheet(
                 text = stringResource(R.string.add_field),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = OnBackground
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             )
 
@@ -105,8 +102,8 @@ fun AddFieldOptionRow(
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(14.dp),
-        color = SurfaceContainer,
-        border = BorderStroke(1.dp, Placeholder.copy(alpha = 0.25f)),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(
@@ -120,14 +117,14 @@ fun AddFieldOptionRow(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Placeholder.copy(alpha = 0.12f)),
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     modifier = Modifier.size(22.dp),
                     imageVector = ImageVector.vectorResource(iconRes),
                     contentDescription = null,
-                    tint = OnBackground
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
             Column(
@@ -138,13 +135,13 @@ fun AddFieldOptionRow(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontWeight = FontWeight.SemiBold,
-                        color = OnBackground
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 )
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = Placeholder
+                        color = MaterialTheme.colorScheme.outline
                     )
                 )
             }

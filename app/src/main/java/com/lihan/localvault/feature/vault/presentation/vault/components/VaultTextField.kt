@@ -38,8 +38,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.presentation.ui.theme.OnBackground
-import com.lihan.localvault.core.presentation.ui.theme.Placeholder
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 
 @Composable
@@ -75,7 +73,7 @@ fun VaultTextField(
                     if (textFieldState.text.isBlank()){
                         Text(
                             text = placeholder,
-                            color = Placeholder
+                            color = MaterialTheme.colorScheme.outline
                         )
                     }
                     innerField()
@@ -87,13 +85,13 @@ fun VaultTextField(
         },
         textStyle = MaterialTheme.typography.bodyMedium.copy(
             fontWeight = FontWeight.Medium,
-            color = OnBackground
+            color = MaterialTheme.colorScheme.onBackground
         ),
         modifier = modifier
             .border(
                 width = 1.dp,
                 shape = RoundedCornerShape(24.dp),
-                color = Placeholder
+                color = MaterialTheme.colorScheme.outline
             )
             .padding(vertical = 12.dp, horizontal = 16.dp),
         scrollState = rememberScrollState(),
