@@ -41,7 +41,8 @@ fun CreateVaultFieldItem(
     onTogglePasswordVisibility: () -> Unit,
     onPasteField: () -> Unit,
     onRemoveField: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onMoveUp: (() -> Unit)? = null
 ) {
     val defaultPlaceholder = when (field.type) {
         FieldType.SINGLE_LINE -> stringResource(R.string.account)
@@ -88,17 +89,37 @@ fun CreateVaultFieldItem(
                 )
             }
 
-            IconButton(
-                modifier = Modifier.size(28.dp),
-                onClick = onRemoveField,
-                shape = CircleShape
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(
-                    modifier = Modifier.size(16.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.x),
-                    contentDescription = stringResource(R.string.delete),
-                    tint = MaterialTheme.colorScheme.outline
-                )
+                if (onMoveUp != null) {
+                    IconButton(
+                        modifier = Modifier.size(28.dp),
+                        onClick = onMoveUp,
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = ImageVector.vectorResource(R.drawable.chevron_up),
+                            contentDescription = stringResource(R.string.move_up),
+                            tint = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+
+                IconButton(
+                    modifier = Modifier.size(28.dp),
+                    onClick = onRemoveField,
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.x),
+                        contentDescription = stringResource(R.string.delete),
+                        tint = MaterialTheme.colorScheme.outline
+                    )
+                }
             }
         }
 

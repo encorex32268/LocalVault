@@ -18,5 +18,7 @@ sealed interface VaultAction {
     data object OnCollapseAll: VaultAction
     data object OnAuthenticatedSession: VaultAction
     data object OnEndSession: VaultAction
+    data object OnRequestBiometric: VaultAction
+    data object OnAppForeground: VaultAction
     data class OnBiometricSuccess(val id: Long): VaultAction
 }

@@ -105,6 +105,22 @@ class CreateVaultViewModel(
                     )
                 }
             }
+            is CreateVaultAction.OnMoveField -> {
+                _state.update { state ->
+                    if (action.fromIndex == action.toIndex ||
+                        action.fromIndex !in state.fields.indices ||
+                        action.toIndex !in state.fields.indices
+                    ) {
+                        state
+                    } else {
+                        val updated = state.fields.toMutableList().apply {
+                            val item = removeAt(action.fromIndex)
+                            add(action.toIndex, item)
+                        }
+                        state.copy(fields = updated)
+                    }
+                }
+            }
             is CreateVaultAction.OnSaveClick -> saveVault()
             else -> Unit
         }

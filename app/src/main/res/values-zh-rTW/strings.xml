@@ -42,4 +42,8 @@
     <string name="field_value">內容</string>
     <string name="vault_limit_count">%1$d/%2$d</string>
     <string name="vault_limit_reached">已達免費方案上限 (%1$d/%2$d)</string>
+    <string name="reorder">重新排序</string>
+    <string name="move_up">上移</string>
+    <string name="tap_to_unlock">點擊以解鎖</string>
+    <string name="vault_locked">LocalVault 已鎖定</string>
 </resources>

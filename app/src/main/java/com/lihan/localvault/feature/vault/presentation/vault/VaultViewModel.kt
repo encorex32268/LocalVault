@@ -46,12 +46,30 @@ class VaultViewModel(
             initialValue = VaultState()
         )
 
+    init {
+        val availability = biometricPromptManager.checkBiometricAvailability()
+        val isAvailable = availability == BiometricAvailability.READY
+        _state.update {
+            it.copy(
+                isBiometricAvailable = isAvailable,
+                isAuthenticatedSession = !isAvailable
+            )
+        }
+    }
+
     fun onAction(action: VaultAction) {
         when (action) {
             is VaultAction.OnToggleExpand -> handleToggleExpand(action.id)
             is VaultAction.OnBiometricSuccess -> {
                 _state.update { it.copy(isAuthenticatedSession = true) }
-                toggleExpand(action.id)
+            }
+            is VaultAction.OnRequestBiometric,
+            is VaultAction.OnAppForeground -> {
+                if (_state.value.isLocked) {
+                    viewModelScope.launch {
+                        _events.send(VaultEvent.RequestBiometric)
+                    }
+                }
             }
             is VaultAction.OnDeleteClick -> {
                 _state.update { it.copy(deleteTargetId = action.id) }
@@ -111,24 +129,7 @@ class VaultViewModel(
     }
 
     private fun handleToggleExpand(id: Long) {
-        val currentItem = _state.value.items.find { it.id == id } ?: return
-
-        if (currentItem.isExpand) {
-            toggleExpand(id)
-            return
-        }
-
-        if (_state.value.isAuthenticatedSession) {
-            toggleExpand(id)
-            return
-        }
-
-        val availability = biometricPromptManager.checkBiometricAvailability()
-        if (availability == BiometricAvailability.READY) {
-            viewModelScope.launch {
-                _events.send(VaultEvent.RequestBiometric(id))
-            }
-        } else {
+        if (!_state.value.isLocked) {
             toggleExpand(id)
         }
     }

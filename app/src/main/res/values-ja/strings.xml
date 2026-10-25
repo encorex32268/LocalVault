@@ -42,4 +42,8 @@
     <string name="field_value">内容</string>
     <string name="vault_limit_count">%1$d/%2$d</string>
     <string name="vault_limit_reached">無料プランの上限に達しました (%1$d/%2$d)</string>
+    <string name="reorder">並べ替え</string>
+    <string name="move_up">上に移動</string>
+    <string name="tap_to_unlock">タップしてロック解除</string>
+    <string name="vault_locked">LocalVault はロックされています</string>
 </resources>
