@@ -104,24 +104,25 @@ class VaultRepositoryImpl(
         }
 
         var importedCount = 0
-        for (item in payload.items) {
+        for ((title, color, iconIndex, category1, updatedAt, fields1) in payload.items) {
             val category = try {
-                VaultCategory.valueOf(item.category)
+                VaultCategory.valueOf(category1)
             } catch (e: Exception) {
                 VaultCategory.CUSTOM
             }
             val vault = Vault(
                 id = 0L,
-                iconIndex = item.iconIndex,
-                color = item.color,
-                title = item.title,
+                iconIndex = iconIndex,
+                color = color,
+                title = title,
                 category = category,
-                updatedAt = item.updatedAt
+                updatedAt = updatedAt
             )
-            val fields = item.fields.map { f ->
+            val fields = fields1.map { f ->
                 val fieldType = try {
                     FieldType.valueOf(f.type)
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     when (f.type) {
                         "TEXT" -> FieldType.SINGLE_LINE
                         "PASSWORD" -> FieldType.PASSWORD
