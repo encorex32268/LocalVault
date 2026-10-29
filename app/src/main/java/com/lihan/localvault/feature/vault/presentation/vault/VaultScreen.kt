@@ -100,7 +100,6 @@ fun VaultRoot(
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     val currentActivity = LocalActivity.current as? FragmentActivity
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(state.isLocked) {
         if (state.isLocked) {
@@ -133,22 +132,19 @@ fun VaultRoot(
         }
     }
 
-    DisposableEffect(lifecycleOwner) {
+    DisposableEffect(currentActivity) {
+        val activity = currentActivity ?: return@DisposableEffect onDispose {}
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_STOP -> {
-                    viewModel.onAction(VaultAction.OnEndSession)
-                    viewModel.onAction(VaultAction.OnCollapseAll)
-                }
                 Lifecycle.Event.ON_START -> {
                     viewModel.onAction(VaultAction.OnAppForeground)
                 }
                 else -> Unit
             }
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
+        activity.lifecycle.addObserver(observer)
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+            activity.lifecycle.removeObserver(observer)
         }
     }
 

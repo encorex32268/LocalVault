@@ -12,6 +12,7 @@ import com.lihan.localvault.core.database.RoomVaultDataSource
 import com.lihan.localvault.core.crypto.AndroidKeyStoreCryptoManager
 import com.lihan.localvault.core.crypto.CryptoManager
 import com.lihan.localvault.core.domain.VaultLocalDataSource
+import com.lihan.localvault.core.session.SessionManager
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -21,6 +22,7 @@ val coreModule = module {
     single { androidContext().appDataStore }
     singleOf(::DefaultAppDataStore) { bind<AppDataStore>() }
     singleOf(::BiometricPromptManager)
+    single { SessionManager() }
 
     single {
         Json {

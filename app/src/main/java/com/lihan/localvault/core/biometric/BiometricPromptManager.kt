@@ -27,6 +27,7 @@ class BiometricPromptManager(
     private val context: Context
 ) {
     private val authenticators = BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+    private var isPromptShowing = false
 
     fun checkBiometricAvailability(): BiometricAvailability {
         val biometricManager = BiometricManager.from(context)
@@ -44,6 +45,8 @@ class BiometricPromptManager(
         description: String? = null,
         onResult: (BiometricResult) -> Unit
     ) {
+        if (isPromptShowing) return
+        isPromptShowing = true
         val executor = ContextCompat.getMainExecutor(activity)
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
@@ -59,10 +62,12 @@ class BiometricPromptManager(
             executor,
             object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    isPromptShowing = false
                     onResult(BiometricResult.Success)
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    isPromptShowing = false
                     if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
                         errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
                         errorCode == BiometricPrompt.ERROR_CANCELED

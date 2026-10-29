@@ -6,6 +6,7 @@ import com.lihan.localvault.core.biometric.BiometricAvailability
 import com.lihan.localvault.core.biometric.BiometricPromptManager
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
+import com.lihan.localvault.core.session.SessionManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 class VaultViewModel(
     private val vaultRepository: VaultRepository,
     private val appDataStore: AppDataStore,
-    private val biometricPromptManager: BiometricPromptManager
+    private val biometricPromptManager: BiometricPromptManager,
+    private val sessionManager: SessionManager
 ): ViewModel() {
 
     private val _events = Channel<VaultEvent>()
@@ -37,6 +39,7 @@ class VaultViewModel(
             observeVaultItems()
             observeTheme()
             observeLimitCardCollapsed()
+            observeSession()
             hasLoadedInitialData = true
         }
     }
@@ -52,7 +55,7 @@ class VaultViewModel(
         _state.update {
             it.copy(
                 isBiometricAvailable = isAvailable,
-                isAuthenticatedSession = !isAvailable
+                isAuthenticatedSession = !isAvailable || sessionManager.isSessionUnlocked.value
             )
         }
     }
@@ -60,12 +63,26 @@ class VaultViewModel(
     fun onAction(action: VaultAction) {
         when (action) {
             is VaultAction.OnToggleExpand -> handleToggleExpand(action.id)
-            is VaultAction.OnBiometricSuccess -> {
-                _state.update { it.copy(isAuthenticatedSession = true) }
+            is VaultAction.OnBiometricSuccess,
+            is VaultAction.OnAuthenticatedSession -> {
+                sessionManager.unlock()
             }
-            is VaultAction.OnRequestBiometric,
-            is VaultAction.OnAppForeground -> {
+            is VaultAction.OnRequestBiometric -> {
                 if (_state.value.isLocked) {
+                    viewModelScope.launch {
+                        _events.send(VaultEvent.RequestBiometric)
+                    }
+                }
+            }
+            is VaultAction.OnAppForeground -> {
+                sessionManager.onAppForeground()
+                if (!sessionManager.isSessionUnlocked.value && _state.value.isBiometricAvailable && _state.value.items.isNotEmpty()) {
+                    _state.update { current ->
+                        current.copy(
+                            isAuthenticatedSession = false,
+                            items = current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
+                        )
+                    }
                     viewModelScope.launch {
                         _events.send(VaultEvent.RequestBiometric)
                     }
@@ -110,16 +127,8 @@ class VaultViewModel(
             is VaultAction.OnClearSearch -> {
                 _state.update { it.copy(searchQuery = "") }
             }
-            is VaultAction.OnAuthenticatedSession -> {
-                _state.update { it.copy(isAuthenticatedSession = true) }
-            }
             is VaultAction.OnEndSession -> {
-                _state.update { current ->
-                    current.copy(
-                        isAuthenticatedSession = false,
-                        items = current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
-                    )
-                }
+                sessionManager.lock()
             }
             is VaultAction.OnCollapseAll -> collapseAll()
             is VaultAction.OnCopyClick,
@@ -150,6 +159,24 @@ class VaultViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun observeSession() {
+        sessionManager.isSessionUnlocked
+            .onEach { isUnlocked ->
+                _state.update { current ->
+                    val authenticated = !current.isBiometricAvailable || isUnlocked
+                    current.copy(
+                        isAuthenticatedSession = authenticated,
+                        items = if (!authenticated) {
+                            current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
+                        } else {
+                            current.items
+                        }
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
     private fun toggleExpand(id: Long) {
         val currentItem = _state.value.items.find { it.id == id } ?: return
         val willExpand = !currentItem.isExpand
@@ -171,7 +198,6 @@ class VaultViewModel(
     private fun collapseAll() {
         _state.update { current ->
             current.copy(
-                isAuthenticatedSession = false,
                 items = current.items.map { if (it.isExpand) it.copy(isExpand = false) else it }
             )
         }
