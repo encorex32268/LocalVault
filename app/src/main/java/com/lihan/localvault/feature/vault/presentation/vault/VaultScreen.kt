@@ -6,6 +6,8 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -45,7 +47,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -80,6 +84,8 @@ import com.lihan.localvault.core.presentation.util.ObserveAsEvents
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
+import com.lihan.localvault.feature.vault.presentation.vault.components.BackupPasswordDialog
+import com.lihan.localvault.feature.vault.presentation.vault.components.BackupPasswordMode
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultItemCard
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultLimitCard
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTopAppBar
@@ -100,6 +106,45 @@ fun VaultRoot(
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
     val currentActivity = LocalActivity.current as? FragmentActivity
+
+    var pendingExportPayload by remember { mutableStateOf<String?>(null) }
+
+    val exportFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")
+    ) { uri ->
+        val content = pendingExportPayload
+        if (uri != null && content != null) {
+            try {
+                context.contentResolver.openOutputStream(uri)?.use { os ->
+                    os.write(content.toByteArray(Charsets.UTF_8))
+                    os.flush()
+                }
+                Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, context.getString(R.string.error_backup_failed), Toast.LENGTH_SHORT).show()
+            }
+        }
+        pendingExportPayload = null
+    }
+
+    val importFileLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                val content = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    inputStream.bufferedReader(Charsets.UTF_8).readText()
+                }
+                if (!content.isNullOrBlank()) {
+                    viewModel.onAction(VaultAction.OnImportFileSelected(content))
+                } else {
+                    Toast.makeText(context, context.getString(R.string.error_corrupted_backup), Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, context.getString(R.string.error_backup_failed), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     LaunchedEffect(state.isLocked) {
         if (state.isLocked) {
@@ -128,6 +173,21 @@ fun VaultRoot(
                         viewModel.onAction(VaultAction.OnAuthenticatedSession)
                     }
                 }
+            }
+            is VaultEvent.LaunchExportFilePicker -> {
+                pendingExportPayload = event.content
+                exportFileLauncher.launch(event.suggestedFileName)
+            }
+            is VaultEvent.LaunchImportFilePicker -> {
+                importFileLauncher.launch(arrayOf("*/*"))
+            }
+            is VaultEvent.ShowToast -> {
+                val message = if (event.formatArgs.isNotEmpty()) {
+                    context.getString(event.messageRes, *event.formatArgs.toTypedArray())
+                } else {
+                    context.getString(event.messageRes)
+                }
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -197,7 +257,9 @@ private fun VaultScreen(
                     onSearchQueryChange = { onAction(VaultAction.OnSearchQueryChange(it)) },
                     onToggleSearch = { onAction(VaultAction.OnToggleSearch) },
                     onClearSearch = { onAction(VaultAction.OnClearSearch) },
-                    onToggleTheme = { onAction(VaultAction.OnToggleTheme) }
+                    onToggleTheme = { onAction(VaultAction.OnToggleTheme) },
+                    onExportClick = { onAction(VaultAction.OnExportBackupClick) },
+                    onImportClick = { onAction(VaultAction.OnImportBackupClick) }
                 )
             },
             floatingActionButton = {
@@ -409,6 +471,32 @@ private fun VaultScreen(
             },
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
             shape = RoundedCornerShape(16.dp)
+        )
+    }
+
+    if (state.isExportPasswordDialogVisible) {
+        BackupPasswordDialog(
+            mode = BackupPasswordMode.EXPORT,
+            errorMessage = state.backupErrorRes?.let { stringResource(it) },
+            onConfirm = { password ->
+                onAction(VaultAction.OnExportPasswordConfirm(password))
+            },
+            onDismiss = {
+                onAction(VaultAction.OnDismissBackupDialog)
+            }
+        )
+    }
+
+    if (state.isImportPasswordDialogVisible) {
+        BackupPasswordDialog(
+            mode = BackupPasswordMode.IMPORT,
+            errorMessage = state.backupErrorRes?.let { stringResource(it) },
+            onConfirm = { password ->
+                onAction(VaultAction.OnImportPasswordConfirm(password))
+            },
+            onDismiss = {
+                onAction(VaultAction.OnDismissBackupDialog)
+            }
         )
     }
 }

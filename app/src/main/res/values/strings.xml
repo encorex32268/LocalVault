@@ -46,4 +46,23 @@
     <string name="move_up">Move up</string>
     <string name="tap_to_unlock">Tap to unlock</string>
     <string name="vault_locked">LocalVault is Locked</string>
+    <string name="more_options">More options</string>
+    <string name="export_backup">Export Encrypted Backup</string>
+    <string name="import_backup">Import Encrypted Backup</string>
+    <string name="export_backup_title">Set Backup Password</string>
+    <string name="export_backup_desc">Set a 4 to 6-digit password to encrypt your backup. This password will be required when restoring. Please remember it!</string>
+    <string name="import_backup_title">Enter Backup Password</string>
+    <string name="import_backup_desc">Enter the 4 to 6-digit password set during backup to decrypt and restore your vaults.</string>
+    <string name="backup_password_label">Password (4-6 digits)</string>
+    <string name="backup_password_placeholder">Enter 4-6 digit password</string>
+    <string name="confirm_backup_password_label">Confirm Password</string>
+    <string name="confirm_backup_password_placeholder">Re-enter password</string>
+    <string name="error_passwords_do_not_match">Passwords do not match</string>
+    <string name="confirm_export">Export</string>
+    <string name="confirm_import">Restore</string>
+    <string name="export_success">Backup exported successfully</string>
+    <string name="import_success">Successfully imported %1$d vault(s)</string>
+    <string name="error_invalid_passphrase">Incorrect password. Unable to decrypt backup.</string>
+    <string name="error_corrupted_backup">Invalid or corrupted backup file</string>
+    <string name="error_backup_failed">Backup operation failed</string>
 </resources>

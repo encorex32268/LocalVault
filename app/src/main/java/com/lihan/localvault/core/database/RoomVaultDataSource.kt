@@ -72,6 +72,34 @@ class RoomVaultDataSource(
         }
     }
 
+    override suspend fun getAllVaultsWithContent(): Result<List<Pair<Vault, VaultContent>>, DataError.Local> {
+        return try {
+            val entities = vaultDao.getAllVaultEntities()
+            val list = entities.map { entity ->
+                val vault = entity.toVault()
+                val decryptedBytes = cryptoManager.decrypt(
+                    ciphertext = entity.ciphertext,
+                    iv = entity.iv
+                )
+                val category = try {
+                    VaultCategory.valueOf(entity.category)
+                } catch (e: Exception) {
+                    VaultCategory.CUSTOM
+                }
+                val content = decryptedBytes.decodeToString().toVaultContent(category = category, json = json)
+                vault to content
+            }
+            Result.Success(list)
+        } catch (e: GeneralSecurityException) {
+            Result.Error(DataError.Local.CRYPTO_ERROR)
+        } catch (e: SerializationException) {
+            Result.Error(DataError.Local.SERIALIZATION)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
     override suspend fun upsertVault(
         vault: Vault,
         content: VaultContent

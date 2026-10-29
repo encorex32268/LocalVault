@@ -2,9 +2,11 @@ package com.lihan.localvault.feature.vault.presentation.vault
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lihan.localvault.R
 import com.lihan.localvault.core.biometric.BiometricAvailability
 import com.lihan.localvault.core.biometric.BiometricPromptManager
 import com.lihan.localvault.core.domain.datastore.AppDataStore
+import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.session.SessionManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
@@ -131,6 +133,44 @@ class VaultViewModel(
                 sessionManager.lock()
             }
             is VaultAction.OnCollapseAll -> collapseAll()
+            is VaultAction.OnExportBackupClick -> {
+                _state.update {
+                    it.copy(
+                        isExportPasswordDialogVisible = true,
+                        backupErrorRes = null
+                    )
+                }
+            }
+            is VaultAction.OnImportBackupClick -> {
+                viewModelScope.launch {
+                    _events.send(VaultEvent.LaunchImportFilePicker)
+                }
+            }
+            is VaultAction.OnDismissBackupDialog -> {
+                _state.update {
+                    it.copy(
+                        isExportPasswordDialogVisible = false,
+                        isImportPasswordDialogVisible = false,
+                        pendingImportContent = null,
+                        backupErrorRes = null
+                    )
+                }
+            }
+            is VaultAction.OnExportPasswordConfirm -> {
+                handleExportBackup(action.password)
+            }
+            is VaultAction.OnImportFileSelected -> {
+                _state.update {
+                    it.copy(
+                        isImportPasswordDialogVisible = true,
+                        pendingImportContent = action.content,
+                        backupErrorRes = null
+                    )
+                }
+            }
+            is VaultAction.OnImportPasswordConfirm -> {
+                handleImportBackup(action.password)
+            }
             is VaultAction.OnCopyClick,
             is VaultAction.OnCreateClick,
             is VaultAction.OnEditClick -> Unit
@@ -269,5 +309,46 @@ class VaultViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun handleExportBackup(passphrase: String) {
+        viewModelScope.launch {
+            when (val result = vaultRepository.exportBackup(passphrase)) {
+                is Result.Success -> {
+                    _state.update { it.copy(isExportPasswordDialogVisible = false, backupErrorRes = null) }
+                    val fileName = "localvault_backup_${System.currentTimeMillis()}.vault"
+                    _events.send(VaultEvent.LaunchExportFilePicker(suggestedFileName = fileName, content = result.data))
+                }
+                is Result.Error -> {
+                    _events.send(VaultEvent.ShowToast(R.string.error_backup_failed))
+                }
+            }
+        }
+    }
+
+    private fun handleImportBackup(passphrase: String) {
+        val content = _state.value.pendingImportContent ?: return
+        viewModelScope.launch {
+            when (val result = vaultRepository.importBackup(passphrase, content)) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            isImportPasswordDialogVisible = false,
+                            pendingImportContent = null,
+                            backupErrorRes = null
+                        )
+                    }
+                    _events.send(VaultEvent.ShowToast(R.string.import_success, listOf(result.data)))
+                }
+                is Result.Error -> {
+                    val errorRes = when (result.error) {
+                        DataError.Local.INVALID_PASSPHRASE -> R.string.error_invalid_passphrase
+                        DataError.Local.CORRUPTED_DATA -> R.string.error_corrupted_backup
+                        else -> R.string.error_backup_failed
+                    }
+                    _state.update { it.copy(backupErrorRes = errorRes) }
+                }
+            }
+        }
     }
 }

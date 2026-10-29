@@ -9,6 +9,7 @@ interface VaultLocalDataSource {
     fun observeVaults(): Flow<List<Vault>>
     suspend fun getVaultById(id: Long): Result<Vault, DataError.Local>
     suspend fun getVaultContent(id: Long): Result<VaultContent, DataError.Local>
+    suspend fun getAllVaultsWithContent(): Result<List<Pair<Vault, VaultContent>>, DataError.Local>
     suspend fun upsertVault(vault: Vault, content: VaultContent): EmptyResult<DataError.Local>
     suspend fun deleteVault(id: Long): EmptyResult<DataError.Local>
 }

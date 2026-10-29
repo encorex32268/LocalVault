@@ -15,7 +15,11 @@ data class VaultState(
     val isBiometricAvailable: Boolean = false,
     val isLimitEnabled: Boolean = false,
     val maxVaultCount: Int = MAX_FREE_VAULTS,
-    val isLimitCardCollapsed: Boolean = false
+    val isLimitCardCollapsed: Boolean = false,
+    val isExportPasswordDialogVisible: Boolean = false,
+    val isImportPasswordDialogVisible: Boolean = false,
+    val pendingImportContent: String? = null,
+    val backupErrorRes: Int? = null
 ) {
     val isLocked: Boolean get() = isBiometricAvailable && !isAuthenticatedSession && items.isNotEmpty()
     val totalCount: Int get() = items.size

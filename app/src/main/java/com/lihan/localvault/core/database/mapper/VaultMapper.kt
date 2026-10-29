@@ -26,6 +26,21 @@ fun VaultSummaryTuple.toVault(): Vault {
     )
 }
 
+fun VaultEntity.toVault(): Vault {
+    return Vault(
+        id = id,
+        iconIndex = iconIndex,
+        color = color,
+        title = title,
+        updatedAt = updatedAt,
+        category = try {
+            VaultCategory.valueOf(category)
+        } catch (e: Exception) {
+            VaultCategory.CUSTOM
+        }
+    )
+}
+
 fun Vault.toVaultEntity(
     ciphertext: ByteArray,
     iv: ByteArray

@@ -23,6 +23,9 @@ interface VaultDao {
     @Upsert
     suspend fun upsertVault(entity: VaultEntity)
 
+    @Query("SELECT * FROM vault_items")
+    suspend fun getAllVaultEntities(): List<VaultEntity>
+
     @Query("DELETE FROM vault_items WHERE id = :id")
     suspend fun deleteVaultById(id: Long): Int
 }

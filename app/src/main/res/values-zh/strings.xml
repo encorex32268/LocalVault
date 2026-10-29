@@ -46,4 +46,23 @@
     <string name="move_up">上移</string>
     <string name="tap_to_unlock">點擊以解鎖</string>
     <string name="vault_locked">LocalVault 已鎖定</string>
+    <string name="more_options">更多選項</string>
+    <string name="export_backup">匯出加密備份</string>
+    <string name="import_backup">匯入加密備份</string>
+    <string name="export_backup_title">設定備份密碼</string>
+    <string name="export_backup_desc">請設定 4 到 6 位密碼以加密備份檔。還原時必須使用此密碼，請務必牢記！</string>
+    <string name="import_backup_title">輸入備份密碼</string>
+    <string name="import_backup_desc">請輸入備份時設定的 4 到 6 位密碼以解密並還原資料。</string>
+    <string name="backup_password_label">密碼 (4-6 位數)</string>
+    <string name="backup_password_placeholder">請輸入 4-6 位密碼</string>
+    <string name="confirm_backup_password_label">確認密碼</string>
+    <string name="confirm_backup_password_placeholder">請再次輸入密碼</string>
+    <string name="error_passwords_do_not_match">兩次輸入的密碼不一致</string>
+    <string name="confirm_export">匯出</string>
+    <string name="confirm_import">還原</string>
+    <string name="export_success">備份檔已成功匯出</string>
+    <string name="import_success">已成功還原 %1$d 筆帳號密碼</string>
+    <string name="error_invalid_passphrase">密碼錯誤，無法解密備份檔</string>
+    <string name="error_corrupted_backup">備份檔案損毀或格式不符</string>
+    <string name="error_backup_failed">備份作業失敗</string>
 </resources>

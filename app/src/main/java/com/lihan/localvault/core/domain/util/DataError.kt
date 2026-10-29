@@ -24,6 +24,8 @@ sealed interface DataError : Error {
         NOT_FOUND,
         SERIALIZATION,
         CRYPTO_ERROR,
+        INVALID_PASSPHRASE,
+        CORRUPTED_DATA,
         UNKNOWN
     }
 }
