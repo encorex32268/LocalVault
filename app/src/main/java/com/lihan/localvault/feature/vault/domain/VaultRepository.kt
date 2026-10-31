@@ -13,6 +13,6 @@ interface VaultRepository {
     suspend fun getVaultContent(id: Long): Result<VaultContent, DataError.Local>
     suspend fun deleteVault(id: Long): EmptyResult<DataError.Local>
     suspend fun upsertVault(vault: Vault, content: VaultContent): EmptyResult<DataError.Local>
-    suspend fun exportBackup(passphrase: String): Result<String, DataError.Local>
+    suspend fun exportBackup(passphrase: String, includeAttachments: Boolean = true): Result<String, DataError.Local>
     suspend fun importBackup(passphrase: String, backupJson: String): Result<Int, DataError.Local>
 }

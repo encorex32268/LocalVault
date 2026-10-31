@@ -39,7 +39,7 @@ class CreateVaultViewModelTest {
         override suspend fun getVaultContent(id: Long): Result<VaultContent, DataError.Local> = Result.Error(DataError.Local.NOT_FOUND)
         override suspend fun deleteVault(id: Long): EmptyResult<DataError.Local> = Result.Success(Unit)
         override suspend fun upsertVault(vault: Vault, content: VaultContent): EmptyResult<DataError.Local> = Result.Success(Unit)
-        override suspend fun exportBackup(passphrase: String): Result<String, DataError.Local> = Result.Success("")
+        override suspend fun exportBackup(passphrase: String, includeAttachments: Boolean): Result<String, DataError.Local> = Result.Success("")
         override suspend fun importBackup(passphrase: String, backupJson: String): Result<Int, DataError.Local> = Result.Success(0)
     }
 

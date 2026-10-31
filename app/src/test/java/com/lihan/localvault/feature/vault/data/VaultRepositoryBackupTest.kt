@@ -3,6 +3,7 @@ package com.lihan.localvault.feature.vault.data
 import com.lihan.localvault.core.backup.BackupCryptoManager
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
+import com.lihan.localvault.core.domain.VaultAttachment
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.domain.VaultField
@@ -134,5 +135,99 @@ class VaultRepositoryBackupTest {
         val importResult = repository.importBackup("1234", "not_a_json_string")
         assertTrue(importResult is Result.Error)
         assertEquals(DataError.Local.CORRUPTED_DATA, (importResult as Result.Error).error)
+    }
+
+    @Test
+    fun exportAndImport_withAttachments_preservesAttachmentsAndReencryptsFiles() = runBlocking {
+        val fileManager = FakeEncryptedFileManager()
+        val saveResult = fileManager.saveEncryptedBytes("id_card.jpg", "image/jpeg", byteArrayOf(10, 20, 30))
+        val att = (saveResult as Result.Success).data
+
+        val fakeDataSource = FakeLocalDataSource().apply {
+            vaultStore.add(
+                Vault(
+                    id = 1L,
+                    title = "Secret Vault",
+                    iconIndex = 0,
+                    color = 100L,
+                    category = VaultCategory.CUSTOM,
+                    updatedAt = 123456L,
+                    hasAttachments = true
+                ) to VaultContent(
+                    fields = listOf(VaultField(id = "1", label = "Note", value = "Secret note", type = FieldType.SINGLE_LINE)),
+                    attachments = listOf(att)
+                )
+            )
+        }
+
+        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, fileManager, json)
+        val exportResult = repository.exportBackup("1234", includeAttachments = true)
+        assertTrue(exportResult is Result.Success)
+        val backupJson = (exportResult as Result.Success).data
+
+        val newFileManager = FakeEncryptedFileManager()
+        val newFakeDataSource = FakeLocalDataSource()
+        val newRepository = VaultRepositoryImpl(newFakeDataSource, backupCryptoManager, newFileManager, json)
+
+        val importResult = newRepository.importBackup("1234", backupJson)
+        assertTrue(importResult is Result.Success)
+        assertEquals(1, (importResult as Result.Success).data)
+
+        val restoredVault = newFakeDataSource.vaultStore.first().first
+        val restoredContent = newFakeDataSource.vaultStore.first().second
+
+        assertTrue(restoredVault.hasAttachments)
+        assertEquals(1, restoredContent.attachments.size)
+        assertEquals("id_card.jpg", restoredContent.attachments.first().fileName)
+        assertEquals("image/jpeg", restoredContent.attachments.first().mimeType)
+
+        // Verify the file was saved to the new file manager's encrypted storage
+        val restoredBytesResult = newFileManager.readDecryptedBytes(restoredContent.attachments.first().encryptedFileName)
+        assertTrue(restoredBytesResult is Result.Success)
+        val restoredBytes = (restoredBytesResult as Result.Success).data
+        org.junit.Assert.assertArrayEquals(byteArrayOf(10, 20, 30), restoredBytes)
+    }
+
+    @Test
+    fun exportAndImport_withIncludeAttachmentsFalse_omitsAttachments() = runBlocking {
+        val fileManager = FakeEncryptedFileManager()
+        val saveResult = fileManager.saveEncryptedBytes("doc.pdf", "application/pdf", byteArrayOf(1, 2, 3))
+        val att = (saveResult as Result.Success).data
+
+        val fakeDataSource = FakeLocalDataSource().apply {
+            vaultStore.add(
+                Vault(
+                    id = 1L,
+                    title = "Passport",
+                    iconIndex = 0,
+                    color = 100L,
+                    category = VaultCategory.CUSTOM,
+                    updatedAt = 123456L,
+                    hasAttachments = true
+                ) to VaultContent(
+                    fields = listOf(VaultField(id = "1", label = "Number", value = "12345", type = FieldType.SINGLE_LINE)),
+                    attachments = listOf(att)
+                )
+            )
+        }
+
+        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, fileManager, json)
+        val exportResult = repository.exportBackup("1234", includeAttachments = false)
+        assertTrue(exportResult is Result.Success)
+        val backupJson = (exportResult as Result.Success).data
+
+        val newFileManager = FakeEncryptedFileManager()
+        val newFakeDataSource = FakeLocalDataSource()
+        val newRepository = VaultRepositoryImpl(newFakeDataSource, backupCryptoManager, newFileManager, json)
+
+        val importResult = newRepository.importBackup("1234", backupJson)
+        assertTrue(importResult is Result.Success)
+
+        val restoredVault = newFakeDataSource.vaultStore.first().first
+        val restoredContent = newFakeDataSource.vaultStore.first().second
+
+        assertFalse(restoredVault.hasAttachments)
+        assertTrue(restoredContent.attachments.isEmpty())
+        assertTrue(newFileManager.savedFiles.isEmpty())
     }
 }

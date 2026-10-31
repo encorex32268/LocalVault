@@ -27,7 +27,15 @@ data class VaultBackupItem(
     val iconIndex: Int,
     val category: String,
     val updatedAt: Long,
-    val fields: List<VaultBackupField>
+    val fields: List<VaultBackupField>,
+    val attachments: List<VaultBackupAttachment> = emptyList()
+)
+
+@Serializable
+data class VaultBackupAttachment(
+    val fileName: String,
+    val mimeType: String,
+    val dataBase64: String
 )
 
 @Serializable

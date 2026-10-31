@@ -2,6 +2,7 @@ package com.lihan.localvault.feature.vault.data
 
 import com.lihan.localvault.core.backup.BackupCryptoManager
 import com.lihan.localvault.core.backup.model.BackupEnvelope
+import com.lihan.localvault.core.backup.model.VaultBackupAttachment
 import com.lihan.localvault.core.backup.model.VaultBackupField
 import com.lihan.localvault.core.backup.model.VaultBackupItem
 import com.lihan.localvault.core.backup.model.VaultBackupPayload
@@ -18,6 +19,8 @@ import com.lihan.localvault.core.storage.EncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 class VaultRepositoryImpl(
     private val vaultLocalDataSource: VaultLocalDataSource,
@@ -62,7 +65,10 @@ class VaultRepositoryImpl(
         return vaultLocalDataSource.upsertVault(vault, content)
     }
 
-    override suspend fun exportBackup(passphrase: String): Result<String, DataError.Local> {
+    override suspend fun exportBackup(
+        passphrase: String,
+        includeAttachments: Boolean
+    ): Result<String, DataError.Local> {
         return when (val result = vaultLocalDataSource.getAllVaultsWithContent()) {
             is Result.Error -> Result.Error(result.error)
             is Result.Success -> {
@@ -76,13 +82,32 @@ class VaultRepositoryImpl(
                                 type = field.type.name
                             )
                         }
+                        val backupAttachments = if (includeAttachments) {
+                            content.attachments.mapNotNull { att ->
+                                when (val bytesResult = encryptedFileManager.readDecryptedBytes(att.encryptedFileName)) {
+                                    is Result.Success -> {
+                                        @OptIn(ExperimentalEncodingApi::class)
+                                        val base64 = Base64.encode(bytesResult.data)
+                                        VaultBackupAttachment(
+                                            fileName = att.fileName,
+                                            mimeType = att.mimeType,
+                                            dataBase64 = base64
+                                        )
+                                    }
+                                    is Result.Error -> null
+                                }
+                            }
+                        } else {
+                            emptyList()
+                        }
                         VaultBackupItem(
                             title = vault.title,
                             color = vault.color,
                             iconIndex = vault.iconIndex,
                             category = vault.category.name,
                             updatedAt = vault.updatedAt,
-                            fields = fields
+                            fields = fields,
+                            attachments = backupAttachments
                         )
                     }
                     val payload = VaultBackupPayload(
@@ -121,25 +146,16 @@ class VaultRepositoryImpl(
         }
 
         var importedCount = 0
-        for ((title, color, iconIndex, category1, updatedAt, fields1) in payload.items) {
+        for (item in payload.items) {
             val category = try {
-                VaultCategory.valueOf(category1)
+                VaultCategory.valueOf(item.category)
             } catch (e: Exception) {
                 VaultCategory.CUSTOM
             }
-            val vault = Vault(
-                id = 0L,
-                iconIndex = iconIndex,
-                color = color,
-                title = title,
-                category = category,
-                updatedAt = updatedAt
-            )
-            val fields = fields1.map { f ->
+            val fields = item.fields.map { f ->
                 val fieldType = try {
                     FieldType.valueOf(f.type)
                 } catch (e: Exception) {
-                    e.printStackTrace()
                     when (f.type) {
                         "TEXT" -> FieldType.SINGLE_LINE
                         "PASSWORD" -> FieldType.PASSWORD
@@ -154,7 +170,30 @@ class VaultRepositoryImpl(
                     type = fieldType
                 )
             }
-            val content = VaultContent(fields = fields)
+
+            val restoredAttachments = item.attachments.mapNotNull { att ->
+                try {
+                    @OptIn(ExperimentalEncodingApi::class)
+                    val bytes = Base64.decode(att.dataBase64)
+                    when (val saveResult = encryptedFileManager.saveEncryptedBytes(att.fileName, att.mimeType, bytes)) {
+                        is Result.Success -> saveResult.data
+                        is Result.Error -> null
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+            }
+
+            val vault = Vault(
+                id = 0L,
+                iconIndex = item.iconIndex,
+                color = item.color,
+                title = item.title,
+                category = category,
+                updatedAt = item.updatedAt,
+                hasAttachments = restoredAttachments.isNotEmpty()
+            )
+            val content = VaultContent(fields = fields, attachments = restoredAttachments)
             when (vaultLocalDataSource.upsertVault(vault, content)) {
                 is Result.Success -> importedCount++
                 is Result.Error -> Unit
