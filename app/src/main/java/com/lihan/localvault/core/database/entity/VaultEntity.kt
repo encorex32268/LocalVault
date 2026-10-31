@@ -13,7 +13,8 @@ data class VaultEntity(
     val category: String,
     val ciphertext: ByteArray,
     val iv: ByteArray,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val hasAttachments: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,6 +30,7 @@ data class VaultEntity(
         if (!ciphertext.contentEquals(other.ciphertext)) return false
         if (!iv.contentEquals(other.iv)) return false
         if (updatedAt != other.updatedAt) return false
+        if (hasAttachments != other.hasAttachments) return false
 
         return true
     }
@@ -42,6 +44,7 @@ data class VaultEntity(
         result = 31 * result + ciphertext.contentHashCode()
         result = 31 * result + iv.contentHashCode()
         result = 31 * result + updatedAt.hashCode()
+        result = 31 * result + hasAttachments.hashCode()
         return result
     }
 }
@@ -52,7 +55,8 @@ data class VaultSummaryTuple(
     val color: Long,
     val title: String,
     val category: String,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val hasAttachments: Boolean = false
 )
 
 data class VaultEncryptedTuple(

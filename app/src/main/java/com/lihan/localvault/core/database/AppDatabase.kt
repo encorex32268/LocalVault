@@ -7,7 +7,7 @@ import com.lihan.localvault.core.database.entity.VaultEntity
 
 @Database(
     entities = [VaultEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

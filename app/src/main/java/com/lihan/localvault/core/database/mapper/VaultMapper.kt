@@ -1,11 +1,13 @@
 package com.lihan.localvault.core.database.mapper
 
 import com.lihan.localvault.core.database.dto.DynamicVaultContentDto
+import com.lihan.localvault.core.database.dto.VaultAttachmentDto
 import com.lihan.localvault.core.database.dto.VaultFieldDto
 import com.lihan.localvault.core.database.entity.VaultEntity
 import com.lihan.localvault.core.database.entity.VaultSummaryTuple
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
+import com.lihan.localvault.core.domain.VaultAttachment
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.domain.VaultField
@@ -22,7 +24,8 @@ fun VaultSummaryTuple.toVault(): Vault {
             VaultCategory.valueOf(category)
         } catch (e: Exception) {
             VaultCategory.CUSTOM
-        }
+        },
+        hasAttachments = hasAttachments
     )
 }
 
@@ -37,7 +40,8 @@ fun VaultEntity.toVault(): Vault {
             VaultCategory.valueOf(category)
         } catch (e: Exception) {
             VaultCategory.CUSTOM
-        }
+        },
+        hasAttachments = hasAttachments
     )
 }
 
@@ -53,7 +57,8 @@ fun Vault.toVaultEntity(
         category = category.name,
         ciphertext = ciphertext,
         iv = iv,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
+        hasAttachments = hasAttachments
     )
 }
 
@@ -65,6 +70,16 @@ fun VaultContent.toJsonString(json: Json): String {
                 type = it.type.name,
                 label = it.label,
                 value = it.value
+            )
+        },
+        attachments = attachments.map {
+            VaultAttachmentDto(
+                id = it.id,
+                fileName = it.fileName,
+                mimeType = it.mimeType,
+                fileSize = it.fileSize,
+                encryptedFileName = it.encryptedFileName,
+                createdAt = it.createdAt
             )
         }
     )
@@ -92,6 +107,16 @@ fun String.toVaultContent(
                     },
                     label = dto.label,
                     value = dto.value
+                )
+            },
+            attachments = dynamicDto.attachments.map { dto ->
+                VaultAttachment(
+                    id = dto.id.ifEmpty { java.util.UUID.randomUUID().toString() },
+                    fileName = dto.fileName,
+                    mimeType = dto.mimeType,
+                    fileSize = dto.fileSize,
+                    encryptedFileName = dto.encryptedFileName,
+                    createdAt = dto.createdAt
                 )
             }
         )

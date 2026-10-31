@@ -11,6 +11,17 @@ data class VaultFieldDto(
 )
 
 @Serializable
+data class VaultAttachmentDto(
+    val id: String = "",
+    val fileName: String = "",
+    val mimeType: String = "",
+    val fileSize: Long = 0L,
+    val encryptedFileName: String = "",
+    val createdAt: Long = 0L
+)
+
+@Serializable
 data class DynamicVaultContentDto(
-    val fields: List<VaultFieldDto> = emptyList()
+    val fields: List<VaultFieldDto> = emptyList(),
+    val attachments: List<VaultAttachmentDto> = emptyList()
 )

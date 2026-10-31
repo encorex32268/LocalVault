@@ -27,8 +27,26 @@ class RoomVaultDataSource(
     private val json: Json
 ) : VaultLocalDataSource {
 
+    private var hasMigratedLegacyAttachmentsFlag = false
+
     override fun observeVaults(): Flow<List<Vault>> {
         return vaultDao.observeVaultSummaries().map { list ->
+            if (!hasMigratedLegacyAttachmentsFlag) {
+                hasMigratedLegacyAttachmentsFlag = true
+                try {
+                    val entities = vaultDao.getAllVaultEntities()
+                    for (entity in entities) {
+                        if (!entity.hasAttachments) {
+                            val decryptedBytes = cryptoManager.decrypt(entity.ciphertext, entity.iv)
+                            val content = decryptedBytes.decodeToString().toVaultContent(json = json)
+                            if (content.attachments.isNotEmpty()) {
+                                vaultDao.upsertVault(entity.copy(hasAttachments = true))
+                            }
+                        }
+                    }
+                } catch (_: Exception) {
+                }
+            }
             list.map { it.toVault() }
         }
     }
@@ -107,7 +125,7 @@ class RoomVaultDataSource(
         return try {
             val jsonString = content.toJsonString(json)
             val encryptedData = cryptoManager.encrypt(jsonString.encodeToByteArray())
-            val entity = vault.toVaultEntity(
+            val entity = vault.copy(hasAttachments = content.attachments.isNotEmpty()).toVaultEntity(
                 ciphertext = encryptedData.ciphertext,
                 iv = encryptedData.iv
             )

@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface VaultDao {
 
-    @Query("SELECT id, iconIndex, color, title, category, updatedAt FROM vault_items ORDER BY updatedAt DESC")
+    @Query("SELECT id, iconIndex, color, title, category, updatedAt, hasAttachments FROM vault_items ORDER BY updatedAt DESC")
     fun observeVaultSummaries(): Flow<List<VaultSummaryTuple>>
 
-    @Query("SELECT id, iconIndex, color, title, category, updatedAt FROM vault_items WHERE id = :id LIMIT 1")
+    @Query("SELECT id, iconIndex, color, title, category, updatedAt, hasAttachments FROM vault_items WHERE id = :id LIMIT 1")
     suspend fun getVaultSummaryById(id: Long): VaultSummaryTuple?
 
     @Query("SELECT category, ciphertext, iv FROM vault_items WHERE id = :id LIMIT 1")
