@@ -14,6 +14,7 @@ import com.lihan.localvault.core.domain.VaultLocalDataSource
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.EmptyResult
 import com.lihan.localvault.core.domain.util.Result
+import com.lihan.localvault.core.storage.EncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
@@ -21,6 +22,7 @@ import kotlinx.serialization.json.Json
 class VaultRepositoryImpl(
     private val vaultLocalDataSource: VaultLocalDataSource,
     private val backupCryptoManager: BackupCryptoManager,
+    private val encryptedFileManager: EncryptedFileManager,
     private val json: Json
 ): VaultRepository {
     override val vaultItems: Flow<List<Vault>>
@@ -35,6 +37,12 @@ class VaultRepositoryImpl(
     }
 
     override suspend fun deleteVault(id: Long): EmptyResult<DataError.Local> {
+        val contentResult = vaultLocalDataSource.getVaultContent(id)
+        if (contentResult is Result.Success) {
+            contentResult.data.attachments.forEach { attachment ->
+                encryptedFileManager.deleteEncryptedFile(attachment.encryptedFileName)
+            }
+        }
         return vaultLocalDataSource.deleteVault(id)
     }
 
@@ -42,6 +50,15 @@ class VaultRepositoryImpl(
         vault: Vault,
         content: VaultContent
     ): EmptyResult<DataError.Local> {
+        if (vault.id != 0L) {
+            val oldContentResult = vaultLocalDataSource.getVaultContent(vault.id)
+            if (oldContentResult is Result.Success) {
+                val newAttachmentIds = content.attachments.map { it.id }.toSet()
+                oldContentResult.data.attachments
+                    .filter { it.id !in newAttachmentIds }
+                    .forEach { encryptedFileManager.deleteEncryptedFile(it.encryptedFileName) }
+            }
+        }
         return vaultLocalDataSource.upsertVault(vault, content)
     }
 

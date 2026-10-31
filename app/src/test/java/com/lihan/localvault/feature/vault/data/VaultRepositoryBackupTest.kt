@@ -10,6 +10,7 @@ import com.lihan.localvault.core.domain.VaultLocalDataSource
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.EmptyResult
 import com.lihan.localvault.core.domain.util.Result
+import com.lihan.localvault.core.storage.FakeEncryptedFileManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -26,6 +27,7 @@ class VaultRepositoryBackupTest {
         encodeDefaults = true
     }
     private val backupCryptoManager = BackupCryptoManager()
+    private val encryptedFileManager = FakeEncryptedFileManager()
 
     private class FakeLocalDataSource : VaultLocalDataSource {
         val vaultStore = mutableListOf<Pair<Vault, VaultContent>>()
@@ -77,7 +79,7 @@ class VaultRepositoryBackupTest {
             )
         }
 
-        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, json)
+        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, encryptedFileManager, json)
         val password = "1234"
 
         // 1. Export
@@ -91,7 +93,7 @@ class VaultRepositoryBackupTest {
 
         // 2. Import into a new empty database
         val newFakeDataSource = FakeLocalDataSource()
-        val newRepository = VaultRepositoryImpl(newFakeDataSource, backupCryptoManager, json)
+        val newRepository = VaultRepositoryImpl(newFakeDataSource, backupCryptoManager, encryptedFileManager, json)
 
         val importResult = newRepository.importBackup(password, backupJson)
         assertTrue(importResult is Result.Success)
@@ -114,7 +116,7 @@ class VaultRepositoryBackupTest {
                 Vault(id = 1L, title = "Bank", iconIndex = 1, color = 0L, category = VaultCategory.CUSTOM, updatedAt = 1L) to VaultContent()
             )
         }
-        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, json)
+        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, encryptedFileManager, json)
 
         val exportResult = repository.exportBackup("654321")
         val backupJson = (exportResult as Result.Success).data
@@ -127,7 +129,7 @@ class VaultRepositoryBackupTest {
     @Test
     fun import_withCorruptedData_returnsCorruptedDataError() = runBlocking {
         val fakeDataSource = FakeLocalDataSource()
-        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, json)
+        val repository = VaultRepositoryImpl(fakeDataSource, backupCryptoManager, encryptedFileManager, json)
 
         val importResult = repository.importBackup("1234", "not_a_json_string")
         assertTrue(importResult is Result.Error)
