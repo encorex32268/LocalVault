@@ -74,4 +74,5 @@
     <string name="choose_document">Import Document</string>
     <string name="choose_document_desc">PDF, TXT, DOCX files</string>
     <string name="preview_image">Preview Image</string>
+    <string name="include_attachments_in_backup">Include photos and document attachments</string>
 </resources>

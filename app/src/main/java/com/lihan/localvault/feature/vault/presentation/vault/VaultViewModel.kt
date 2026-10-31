@@ -157,7 +157,7 @@ class VaultViewModel(
                 }
             }
             is VaultAction.OnExportPasswordConfirm -> {
-                handleExportBackup(action.password)
+                handleExportBackup(action.password, action.includeAttachments)
             }
             is VaultAction.OnImportFileSelected -> {
                 _state.update {
@@ -311,9 +311,9 @@ class VaultViewModel(
             .launchIn(viewModelScope)
     }
 
-    private fun handleExportBackup(passphrase: String) {
+    private fun handleExportBackup(passphrase: String, includeAttachments: Boolean) {
         viewModelScope.launch {
-            when (val result = vaultRepository.exportBackup(passphrase)) {
+            when (val result = vaultRepository.exportBackup(passphrase, includeAttachments)) {
                 is Result.Success -> {
                     _state.update { it.copy(isExportPasswordDialogVisible = false, backupErrorRes = null) }
                     val fileName = "localvault_backup_${System.currentTimeMillis()}.vault"

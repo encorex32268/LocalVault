@@ -478,8 +478,8 @@ private fun VaultScreen(
         BackupPasswordDialog(
             mode = BackupPasswordMode.EXPORT,
             errorMessage = state.backupErrorRes?.let { stringResource(it) },
-            onConfirm = { password ->
-                onAction(VaultAction.OnExportPasswordConfirm(password))
+            onConfirm = { password, includeAttachments ->
+                onAction(VaultAction.OnExportPasswordConfirm(password, includeAttachments))
             },
             onDismiss = {
                 onAction(VaultAction.OnDismissBackupDialog)
@@ -491,7 +491,7 @@ private fun VaultScreen(
         BackupPasswordDialog(
             mode = BackupPasswordMode.IMPORT,
             errorMessage = state.backupErrorRes?.let { stringResource(it) },
-            onConfirm = { password ->
+            onConfirm = { password, _ ->
                 onAction(VaultAction.OnImportPasswordConfirm(password))
             },
             onDismiss = {

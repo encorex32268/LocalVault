@@ -23,7 +23,7 @@ sealed interface VaultAction {
     data class OnBiometricSuccess(val id: Long): VaultAction
     data object OnExportBackupClick: VaultAction
     data object OnImportBackupClick: VaultAction
-    data class OnExportPasswordConfirm(val password: String): VaultAction
+    data class OnExportPasswordConfirm(val password: String, val includeAttachments: Boolean = true): VaultAction
     data class OnImportFileSelected(val content: String): VaultAction
     data class OnImportPasswordConfirm(val password: String): VaultAction
     data object OnDismissBackupDialog: VaultAction

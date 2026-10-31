@@ -3,6 +3,7 @@ package com.lihan.localvault.feature.vault.presentation.vault.components
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -54,11 +58,12 @@ enum class BackupPasswordMode {
 fun BackupPasswordDialog(
     mode: BackupPasswordMode,
     errorMessage: String? = null,
-    onConfirm: (String) -> Unit,
+    onConfirm: (password: String, includeAttachments: Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var includeAttachments by remember { mutableStateOf(true) }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
 
@@ -148,7 +153,7 @@ fun BackupPasswordDialog(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            if (canSubmit) onConfirm(password)
+                            if (canSubmit) onConfirm(password, includeAttachments)
                         }
                     ),
                     trailingIcon = {
@@ -200,7 +205,7 @@ fun BackupPasswordDialog(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 focusManager.clearFocus()
-                                if (canSubmit) onConfirm(password)
+                                if (canSubmit) onConfirm(password, includeAttachments)
                             }
                         ),
                         trailingIcon = {
@@ -226,6 +231,32 @@ fun BackupPasswordDialog(
                             )
                         )
                     }
+
+                    // Include attachments option
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable { includeAttachments = !includeAttachments }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Checkbox(
+                            checked = includeAttachments,
+                            onCheckedChange = { includeAttachments = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Primary,
+                                uncheckedColor = MaterialTheme.colorScheme.outline
+                            )
+                        )
+                        Text(
+                            text = stringResource(R.string.include_attachments_in_backup),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        )
+                    }
                 }
 
                 // General error message (e.g. wrong password during import)
@@ -248,7 +279,7 @@ fun BackupPasswordDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onConfirm(password) },
+                onClick = { onConfirm(password, includeAttachments) },
                 enabled = canSubmit,
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
