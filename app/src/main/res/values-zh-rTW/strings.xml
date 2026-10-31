@@ -65,4 +65,13 @@
     <string name="error_invalid_passphrase">密碼錯誤，無法解密備份檔</string>
     <string name="error_corrupted_backup">備份檔案損毀或格式不符</string>
     <string name="error_backup_failed">備份作業失敗</string>
+    <string name="attachments">附件</string>
+    <string name="add_attachment">新增附件</string>
+    <string name="take_photo">拍攝相片</string>
+    <string name="take_photo_desc">使用相機拍照並加密保存</string>
+    <string name="choose_image">從相簿選擇</string>
+    <string name="choose_image_desc">選擇相片並加密保存</string>
+    <string name="choose_document">匯入文件</string>
+    <string name="choose_document_desc">PDF、TXT、Word 等檔案</string>
+    <string name="preview_image">預覽相片</string>
 </resources>

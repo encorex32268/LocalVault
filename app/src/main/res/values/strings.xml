@@ -65,4 +65,13 @@
     <string name="error_invalid_passphrase">Incorrect password. Unable to decrypt backup.</string>
     <string name="error_corrupted_backup">Invalid or corrupted backup file</string>
     <string name="error_backup_failed">Backup operation failed</string>
+    <string name="attachments">Attachments</string>
+    <string name="add_attachment">Add Attachment</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="take_photo_desc">Capture photo with camera</string>
+    <string name="choose_image">Choose Image</string>
+    <string name="choose_image_desc">Select image from gallery</string>
+    <string name="choose_document">Import Document</string>
+    <string name="choose_document_desc">PDF, TXT, DOCX files</string>
+    <string name="preview_image">Preview Image</string>
 </resources>
