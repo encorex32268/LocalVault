@@ -7,4 +7,5 @@ data class Vault(
     val title: String,
     val updatedAt: Long,
     val category: VaultCategory,
+    val hasAttachments: Boolean = false
 )

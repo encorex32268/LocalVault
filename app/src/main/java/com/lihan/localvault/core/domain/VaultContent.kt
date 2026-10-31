@@ -14,5 +14,6 @@ data class VaultField(
 )
 
 data class VaultContent(
-    val fields: List<VaultField> = emptyList()
+    val fields: List<VaultField> = emptyList(),
+    val attachments: List<VaultAttachment> = emptyList()
 )

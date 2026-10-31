@@ -15,6 +15,8 @@ import com.lihan.localvault.core.crypto.AndroidKeyStoreCryptoManager
 import com.lihan.localvault.core.crypto.CryptoManager
 import com.lihan.localvault.core.domain.VaultLocalDataSource
 import com.lihan.localvault.core.session.SessionManager
+import com.lihan.localvault.core.storage.AndroidEncryptedFileManager
+import com.lihan.localvault.core.storage.EncryptedFileManager
 import kotlinx.serialization.json.Json
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -25,6 +27,7 @@ val coreModule = module {
     singleOf(::DefaultAppDataStore) { bind<AppDataStore>() }
     singleOf(::BiometricPromptManager)
     singleOf(::BackupCryptoManager)
+    singleOf(::AndroidEncryptedFileManager) { bind<EncryptedFileManager>() }
     single { SessionManager() }
 
     single {
