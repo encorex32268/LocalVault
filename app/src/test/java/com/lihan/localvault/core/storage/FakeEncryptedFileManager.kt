@@ -13,7 +13,7 @@ class FakeEncryptedFileManager : EncryptedFileManager {
     val savedFiles = mutableMapOf<String, ByteArray>()
     val deletedFiles = mutableListOf<String>()
 
-    override fun saveEncryptedFile(sourceUri: Uri): Result<VaultAttachment, DataError.Local> {
+    override suspend fun saveEncryptedFile(sourceUri: Uri): Result<VaultAttachment, DataError.Local> {
         val id = UUID.randomUUID().toString()
         val encName = "$id.enc"
         savedFiles[encName] = byteArrayOf(1, 2, 3)
@@ -28,7 +28,7 @@ class FakeEncryptedFileManager : EncryptedFileManager {
         )
     }
 
-    override fun saveEncryptedBytes(
+    override suspend fun saveEncryptedBytes(
         fileName: String,
         mimeType: String,
         bytes: ByteArray
@@ -47,17 +47,17 @@ class FakeEncryptedFileManager : EncryptedFileManager {
         )
     }
 
-    override fun openDecryptedStream(encryptedFileName: String): Result<InputStream, DataError.Local> {
+    override suspend fun openDecryptedStream(encryptedFileName: String): Result<InputStream, DataError.Local> {
         val bytes = savedFiles[encryptedFileName] ?: return Result.Error(DataError.Local.NOT_FOUND)
         return Result.Success(ByteArrayInputStream(bytes))
     }
 
-    override fun readDecryptedBytes(encryptedFileName: String): Result<ByteArray, DataError.Local> {
+    override suspend fun readDecryptedBytes(encryptedFileName: String): Result<ByteArray, DataError.Local> {
         val bytes = savedFiles[encryptedFileName] ?: return Result.Error(DataError.Local.NOT_FOUND)
         return Result.Success(bytes)
     }
 
-    override fun deleteEncryptedFile(encryptedFileName: String): Boolean {
+    override suspend fun deleteEncryptedFile(encryptedFileName: String): Boolean {
         deletedFiles.add(encryptedFileName)
         return savedFiles.remove(encryptedFileName) != null
     }
