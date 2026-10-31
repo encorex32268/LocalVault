@@ -1,0 +1,24 @@
+<zh-TW>
+- LocalVault 首發版本正式推出！
+- 100% 本地離線儲存，無雲端資料外洩疑慮
+- 支援生物辨識（指紋／臉部解鎖），快速兼顧安全性
+- 安全加密匯出與匯入（PIN 碼保護），離線備份與換機遷移更安心
+- 彈性自訂欄位：帳號、隱藏密碼/PIN、備忘筆記
+- 支援深色／淺色主題與即時關鍵字搜尋
+</zh-TW>
+<en-US>
+- Initial release of LocalVault!
+- 100% offline local storage to keep your passwords and sensitive data private.
+- Biometric authentication (Fingerprint / Face Unlock) for secure and fast access.
+- Secure encrypted export and import (PIN-protected) for easy backups and device transfers.
+- Flexible custom fields: accounts, concealed passwords/PINs, and notes.
+- Dark/Light theme support and fast keyword search.
+</en-US>
+<ja-JP>
+- LocalVault の初回リリースです！
+- 100% 完全オフラインのローカル保存で、大切なパスワードや機密データを安全に保護。
+- 生体認証（指紋・顔認証）に対応し、素早く安全にアクセス可能。
+- 暗号化エクスポート＆インポート（PIN保護）に対応、バックアップや機種変更も安心。
+- 柔軟なカスタムフィールド：アカウント、非表示パスワード/PIN、メモ。
+- ダーク／ライトテーマ対応＆高速キーワード検索。
+</ja-JP>
