@@ -21,4 +21,11 @@ sealed interface CreateVaultAction {
     data class OnRemoveField(val fieldId: String) : CreateVaultAction
     data class OnTogglePasswordVisibility(val fieldId: String) : CreateVaultAction
     data class OnMoveField(val fromIndex: Int, val toIndex: Int) : CreateVaultAction
+    data object OnOpenAddAttachmentMenu : CreateVaultAction
+    data object OnDismissAddAttachmentMenu : CreateVaultAction
+    data object OnTakePhotoClick : CreateVaultAction
+    data object OnChoosePhotoClick : CreateVaultAction
+    data object OnChooseDocumentClick : CreateVaultAction
+    data class OnFileSelected(val uri: android.net.Uri, val tempFile: java.io.File? = null) : CreateVaultAction
+    data class OnRemoveAttachment(val attachmentId: String) : CreateVaultAction
 }

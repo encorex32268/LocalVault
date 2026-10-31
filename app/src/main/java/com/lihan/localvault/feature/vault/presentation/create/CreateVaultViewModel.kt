@@ -1,5 +1,6 @@
 package com.lihan.localvault.feature.vault.presentation.create
 
+import android.net.Uri
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.fromColorLong
@@ -8,15 +9,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
+import com.lihan.localvault.core.domain.VaultAttachment
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.domain.VaultField
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
+import com.lihan.localvault.core.storage.EncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
+import com.lihan.localvault.feature.vault.presentation.model.VaultAttachmentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,10 +30,12 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 
 class CreateVaultViewModel(
     private val vaultRepository: VaultRepository,
-    private val appDataStore: AppDataStore
+    private val appDataStore: AppDataStore,
+    private val encryptedFileManager: EncryptedFileManager
 ) : ViewModel() {
 
     private val _events = Channel<CreateVaultEvent>()
@@ -121,6 +128,72 @@ class CreateVaultViewModel(
                     }
                 }
             }
+            is CreateVaultAction.OnOpenAddAttachmentMenu -> {
+                _state.update { it.copy(isAddAttachmentMenuOpen = true) }
+            }
+            is CreateVaultAction.OnDismissAddAttachmentMenu -> {
+                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+            }
+            is CreateVaultAction.OnTakePhotoClick -> {
+                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                val (uri, tempFile) = encryptedFileManager.createCameraTempUri()
+                viewModelScope.launch {
+                    _events.send(CreateVaultEvent.LaunchCamera(uri, tempFile))
+                }
+            }
+            is CreateVaultAction.OnChoosePhotoClick -> {
+                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                viewModelScope.launch {
+                    _events.send(CreateVaultEvent.LaunchPhotoPicker)
+                }
+            }
+            is CreateVaultAction.OnChooseDocumentClick -> {
+                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                viewModelScope.launch {
+                    _events.send(CreateVaultEvent.LaunchDocumentPicker)
+                }
+            }
+            is CreateVaultAction.OnFileSelected -> {
+                _state.update { it.copy(isProcessingAttachment = true, isAddAttachmentMenuOpen = false) }
+                viewModelScope.launch{
+                    try {
+                        when (val result = encryptedFileManager.saveEncryptedFile(action.uri)) {
+                            is Result.Success -> {
+                                val attachment = result.data
+                                val ui = VaultAttachmentUi(
+                                    id = attachment.id,
+                                    fileName = attachment.fileName,
+                                    mimeType = attachment.mimeType,
+                                    fileSize = attachment.fileSize,
+                                    encryptedFileName = attachment.encryptedFileName
+                                )
+                                _state.update {
+                                    it.copy(
+                                        attachments = it.attachments + ui,
+                                        isProcessingAttachment = false
+                                    )
+                                }
+                            }
+                            is Result.Error -> {
+                                _state.update { it.copy(isProcessingAttachment = false) }
+                            }
+                        }
+                    } finally {
+                        action.tempFile?.let { encryptedFileManager.deleteTempFile(it) }
+                    }
+                }
+            }
+            is CreateVaultAction.OnRemoveAttachment -> {
+                val removed = _state.value.attachments.find { it.id == action.attachmentId }
+                if (removed != null) {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        encryptedFileManager.deleteEncryptedFile(removed.encryptedFileName)
+                    }
+                }
+                _state.update {
+                    it.copy(attachments = it.attachments.filterNot { att -> att.id == action.attachmentId })
+                }
+            }
             is CreateVaultAction.OnSaveClick -> saveVault()
             else -> Unit
         }
@@ -148,6 +221,7 @@ class CreateVaultViewModel(
             if (vaultResult is Result.Success && contentResult is Result.Success) {
                 val vault = vaultResult.data
                 val content = contentResult.data
+                val contentUi = content.toUi()
                 _state.update { current ->
                     current.copy(
                         isLoading = false,
@@ -155,7 +229,8 @@ class CreateVaultViewModel(
                         category = vault.category,
                         iconIndex = vault.iconIndex,
                         vaultTitle = TextFieldState(vault.title),
-                        fields = content.toUi().fields
+                        fields = contentUi.fields,
+                        attachments = contentUi.attachments
                     )
                 }
             } else {
@@ -178,6 +253,15 @@ class CreateVaultViewModel(
                     label = fieldUi.label,
                     value = fieldUi.state.text.toString()
                 )
+            },
+            attachments = currentState.attachments.map { attUi ->
+                VaultAttachment(
+                    id = attUi.id,
+                    fileName = attUi.fileName,
+                    mimeType = attUi.mimeType,
+                    fileSize = attUi.fileSize,
+                    encryptedFileName = attUi.encryptedFileName
+                )
             }
         )
 
@@ -187,7 +271,8 @@ class CreateVaultViewModel(
             color = currentState.color.toColorLong(),
             title = titleText,
             updatedAt = System.currentTimeMillis(),
-            category = currentState.category
+            category = currentState.category,
+            hasAttachments = currentState.attachments.isNotEmpty()
         )
 
         _state.update { it.copy(isLoading = true) }

@@ -2,14 +2,20 @@
 
 package com.lihan.localvault.feature.vault.presentation.create
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
@@ -22,10 +28,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,8 +43,11 @@ import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
+import com.lihan.localvault.feature.vault.presentation.create.components.AddAttachmentBottomSheet
+import com.lihan.localvault.feature.vault.presentation.create.components.AddAttachmentButton
 import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldBottomSheet
 import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldButton
+import com.lihan.localvault.feature.vault.presentation.create.components.AttachmentSection
 import com.lihan.localvault.feature.vault.presentation.create.components.CreateVaultFieldItem
 import com.lihan.localvault.feature.vault.presentation.create.components.CreateVaultTopAppBar
 import com.lihan.localvault.feature.vault.presentation.create.components.IconPickerBottomSheet
@@ -44,6 +55,7 @@ import com.lihan.localvault.feature.vault.presentation.create.components.VaultCo
 import com.lihan.localvault.feature.vault.presentation.create.components.VaultTitleInputSection
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import org.koin.androidx.compose.koinViewModel
+import java.io.File
 
 @Composable
 fun CreateVaultRoot(
@@ -59,9 +71,59 @@ fun CreateVaultRoot(
     @Suppress("DEPRECATION")
     val clipboardManager = LocalClipboardManager.current
 
+    var pendingCameraPhoto by remember { mutableStateOf<Pair<Uri, File>?>(null) }
+
+    val takePhotoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        val pending = pendingCameraPhoto
+        if (success && pending != null) {
+            viewModel.onAction(CreateVaultAction.OnFileSelected(pending.first, pending.second))
+        }
+        pendingCameraPhoto = null
+    }
+
+    val pickPhotoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.onAction(CreateVaultAction.OnFileSelected(it))
+        }
+    }
+
+    val pickDocumentLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            viewModel.onAction(CreateVaultAction.OnFileSelected(it))
+        }
+    }
+
     ObserveAsEvents(viewModel.events) { event ->
         when (event) {
             is CreateVaultEvent.SaveSuccess -> onBack()
+            is CreateVaultEvent.LaunchCamera -> {
+                event.uri?.let {
+                    pendingCameraPhoto = Pair(it, event.tempFile)
+                    takePhotoLauncher.launch(it)
+                }
+            }
+            is CreateVaultEvent.LaunchPhotoPicker -> {
+                pickPhotoLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+            is CreateVaultEvent.LaunchDocumentPicker -> {
+                pickDocumentLauncher.launch(
+                    arrayOf(
+                        "application/pdf",
+                        "text/*",
+                        "application/msword",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        "application/octet-stream"
+                    )
+                )
+            }
         }
     }
 
@@ -175,11 +237,34 @@ private fun CreateVaultScreen(
                 )
             }
 
-            item(key = "add_field_button") {
-                AddFieldButton(
-                    onClick = {
-                        focusManager.clearFocus(true)
-                        onAction(CreateVaultAction.OnOpenAddFieldMenu)
+            item(key = "action_buttons_row") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    AddFieldButton(
+                        onClick = {
+                            focusManager.clearFocus(true)
+                            onAction(CreateVaultAction.OnOpenAddFieldMenu)
+                        },
+                        modifier = Modifier.weight(7f)
+                    )
+                    AddAttachmentButton(
+                        onClick = {
+                            focusManager.clearFocus(true)
+                            onAction(CreateVaultAction.OnOpenAddAttachmentMenu)
+                        },
+                        modifier = Modifier.weight(3f)
+                    )
+                }
+            }
+
+            item(key = "attachment_section") {
+                AttachmentSection(
+                    attachments = state.attachments,
+                    isProcessing = state.isProcessingAttachment,
+                    onRemoveAttachment = { id ->
+                        onAction(CreateVaultAction.OnRemoveAttachment(id))
                     }
                 )
             }
@@ -221,6 +306,12 @@ private fun CreateVaultScreen(
                 onAction(CreateVaultAction.OnSelectIcon(index))
             },
             onDismiss = { onAction(CreateVaultAction.OnDismissIconPicker) }
+        )
+    }
+
+    if (state.isAddAttachmentMenuOpen) {
+        AddAttachmentBottomSheet(
+            onAction = onAction
         )
     }
 }

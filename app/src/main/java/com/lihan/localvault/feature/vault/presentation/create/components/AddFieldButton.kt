@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
@@ -29,7 +30,7 @@ fun AddFieldButton(
     modifier: Modifier = Modifier
 ) {
     OutlinedButton(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.outlinedButtonColors(
@@ -37,7 +38,7 @@ fun AddFieldButton(
             contentColor = MaterialTheme.colorScheme.onBackground
         ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.35f)),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp)
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.add),
@@ -51,7 +52,9 @@ fun AddFieldButton(
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground
-            )
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

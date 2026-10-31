@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
+import com.lihan.localvault.feature.vault.presentation.model.VaultAttachmentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 
 data class CreateVaultState(
@@ -13,10 +14,13 @@ data class CreateVaultState(
     val vaultTitle: TextFieldState = TextFieldState(),
     val category: VaultCategory = VaultCategory.CUSTOM,
     val fields: List<VaultFieldUi> = emptyList(),
+    val attachments: List<VaultAttachmentUi> = emptyList(),
     val color: Color = VaultColors.first(),
     val iconIndex: Int = 0,
     val isIconPickerOpen: Boolean = false,
-    val isAddFieldMenuOpen: Boolean = false
+    val isAddFieldMenuOpen: Boolean = false,
+    val isAddAttachmentMenuOpen: Boolean = false,
+    val isProcessingAttachment: Boolean = false
 ) {
     val iconResId: Int
         get() {
