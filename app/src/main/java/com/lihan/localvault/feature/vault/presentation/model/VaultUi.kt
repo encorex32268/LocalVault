@@ -16,6 +16,7 @@ data class VaultUi(
     val category: VaultCategory,
     val isExpand: Boolean = false,
     val isLoadingContent: Boolean = false,
+    val hasAttachments: Boolean = false,
     val content: VaultContentUi? = null
 ){
     val imageVector: ImageVector

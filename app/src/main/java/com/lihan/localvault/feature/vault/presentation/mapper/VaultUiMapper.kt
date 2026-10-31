@@ -12,7 +12,8 @@ fun Vault.toUi(): VaultUi {
         title = title,
         updatedAt = updatedAt,
         formattedUpdatedAt = updatedAt.toFormattedDateTime(),
-        category = category
+        category = category,
+        hasAttachments = hasAttachments
     )
 }
 

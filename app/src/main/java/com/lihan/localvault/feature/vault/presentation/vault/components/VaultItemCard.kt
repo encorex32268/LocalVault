@@ -26,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,8 +47,11 @@ import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
+import com.lihan.localvault.core.presentation.component.EncryptedImagePreviewDialog
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
+import com.lihan.localvault.feature.vault.presentation.create.components.AttachmentItemCard
+import com.lihan.localvault.feature.vault.presentation.model.VaultAttachmentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultContentUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi
@@ -57,6 +64,8 @@ fun VaultItemCard(
     modifier: Modifier = Modifier,
     onAction: (VaultAction) -> Unit,
 ) {
+    var previewAttachment by remember { mutableStateOf<VaultAttachmentUi?>(null) }
+    val hasAttachments = vault.hasAttachments || !vault.content?.attachments.isNullOrEmpty()
     val accentColor = Color.fromColorLong(vault.color)
     val cardBackgroundColor = accentColor
         .copy(alpha = if (vault.isExpand) 0.14f else 0.08f)
@@ -118,15 +127,28 @@ fun VaultItemCard(
                             .padding(end = 4.dp),
                         verticalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
-                        Text(
-                            modifier = Modifier.basicMarquee(),
-                            text = vault.title,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            maxLines = 1
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f, fill = false).basicMarquee(),
+                                text = vault.title,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                maxLines = 1
+                            )
+                            if (hasAttachments) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_document),
+                                    contentDescription = stringResource(R.string.attachments),
+                                    modifier = Modifier.size(12.dp),
+                                    tint = MaterialTheme.colorScheme.outline
+                                )
+                            }
+                        }
                         if (vault.formattedUpdatedAt.isNotBlank()) {
                             Text(
                                 text = vault.formattedUpdatedAt,
@@ -136,14 +158,27 @@ fun VaultItemCard(
                         }
                     }
                 } else {
-                    Text(
-                        text = vault.title,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.SemiBold
-                        ),
-                        maxLines = 1
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = vault.title,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.SemiBold
+                            ),
+                            maxLines = 1
+                        )
+                        if (hasAttachments) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_document),
+                                contentDescription = stringResource(R.string.attachments),
+                                modifier = Modifier.size(12.dp),
+                                tint = MaterialTheme.colorScheme.outline
+                            )
+                        }
+                    }
                 }
                 if (vault.isExpand) {
                     IconButton(
@@ -218,10 +253,39 @@ fun VaultItemCard(
                                 }
                             }
                         }
+                        if (!vault.content?.attachments.isNullOrEmpty()) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.attachments),
+                                color = MaterialTheme.colorScheme.outline,
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            )
+                            vault.content?.attachments?.forEach { attachment ->
+                                AttachmentItemCard(
+                                    attachment = attachment,
+                                    onRemove = null,
+                                    onClick = {
+                                        if (attachment.isImage) {
+                                            previewAttachment = attachment
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+
+    previewAttachment?.let { attachment ->
+        EncryptedImagePreviewDialog(
+            encryptedFileName = attachment.encryptedFileName,
+            title = attachment.fileName,
+            onDismiss = { previewAttachment = null }
+        )
     }
 }
 
@@ -230,23 +294,45 @@ fun VaultItemCard(
 @Composable
 private fun VaultItemCardPreview() {
     LocalVaultTheme {
-        VaultItemCard(
-            vault = VaultUi(
-                iconIndex = 1,
-                color = VaultCoralRed.toColorLong(),
-                title = "Account",
-                updatedAt = Instant.now().toEpochMilli(),
-                formattedUpdatedAt = "2026年10月23日 下午4:30",
-                category = VaultCategory.CUSTOM,
-                isExpand = true,
-                content = VaultContentUi(
-                    fields = listOf(
-                        VaultFieldUi(type = FieldType.SINGLE_LINE, label = "Account", state = TextFieldState("encore")),
-                        VaultFieldUi(type = FieldType.PASSWORD, label = "Password", state = TextFieldState("password123"))
-                    )
-                )
-            ),
-            onAction = {}
-        )
+        Column {
+            VaultItemCard(
+                vault = VaultUi(
+                    iconIndex = 1,
+                    color = VaultCoralRed.toColorLong(),
+                    title = "Account",
+                    updatedAt = Instant.now().toEpochMilli(),
+                    formattedUpdatedAt = "2026年10月23日 下午4:30",
+                    category = VaultCategory.CUSTOM,
+                    isExpand = false,
+                    content = VaultContentUi(
+                        fields = listOf(
+                            VaultFieldUi(type = FieldType.SINGLE_LINE, label = "Account", state = TextFieldState("encore")),
+                            VaultFieldUi(type = FieldType.PASSWORD, label = "Password", state = TextFieldState("password123"))
+                        )
+                    ),
+                    hasAttachments = true
+                ),
+                onAction = {}
+            )
+            VaultItemCard(
+                vault = VaultUi(
+                    iconIndex = 1,
+                    color = VaultCoralRed.toColorLong(),
+                    title = "Account",
+                    updatedAt = Instant.now().toEpochMilli(),
+                    formattedUpdatedAt = "2026年10月23日 下午4:30",
+                    category = VaultCategory.CUSTOM,
+                    isExpand = true,
+                    content = VaultContentUi(
+                        fields = listOf(
+                            VaultFieldUi(type = FieldType.SINGLE_LINE, label = "Account", state = TextFieldState("encore")),
+                            VaultFieldUi(type = FieldType.PASSWORD, label = "Password", state = TextFieldState("password123"))
+                        )
+                    ),
+                    hasAttachments = true
+                ),
+                onAction = {}
+            )
+        }
     }
 }
