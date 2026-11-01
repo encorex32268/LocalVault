@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
@@ -77,7 +78,7 @@ fun VaultLimitCard(
                     ) {
                         Icon(
                             modifier = Modifier.size(18.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.lock_keyhole),
+                            imageVector = LocalVaultIcons.LockKeyhole,
                             contentDescription = stringResource(R.string.free_plan),
                             tint = if (isLimitReached) VaultCoralRed else Primary
                         )
@@ -108,7 +109,7 @@ fun VaultLimitCard(
                             ) {
                                 Icon(
                                     modifier = Modifier.size(18.dp),
-                                    imageVector = ImageVector.vectorResource(R.drawable.lock_keyhole),
+                                    imageVector = LocalVaultIcons.LockKeyhole,
                                     contentDescription = null,
                                     tint = if (isLimitReached) VaultCoralRed else Primary
                                 )

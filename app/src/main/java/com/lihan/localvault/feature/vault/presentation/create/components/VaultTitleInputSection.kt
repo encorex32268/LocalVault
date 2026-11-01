@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.vault.components.VaultTextField
@@ -94,7 +95,7 @@ fun VaultTitleInputSection(
                     ) {
                         Icon(
                             modifier = Modifier.size(24.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.paste),
+                            imageVector = LocalVaultIcons.Paste,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onBackground
                         )

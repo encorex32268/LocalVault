@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 
@@ -87,7 +88,7 @@ fun VaultTopAppBar(
                         onClick = onToggleSearch
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.back),
+                            imageVector = LocalVaultIcons.Back,
                             contentDescription = stringResource(R.string.close_search),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
@@ -145,7 +146,7 @@ fun VaultTopAppBar(
                         ) {
                             Icon(
                                 modifier = Modifier.size(20.dp),
-                                imageVector = ImageVector.vectorResource(R.drawable.x),
+                                imageVector = LocalVaultIcons.Close,
                                 contentDescription = stringResource(R.string.clear_search),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
@@ -173,7 +174,7 @@ fun VaultTopAppBar(
                     ) {
                         Icon(
                             modifier = Modifier.size(24.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.search),
+                            imageVector = LocalVaultIcons.Search,
                             contentDescription = stringResource(R.string.search),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
@@ -184,9 +185,7 @@ fun VaultTopAppBar(
                     ) {
                         Icon(
                             modifier = Modifier.size(24.dp),
-                            imageVector = ImageVector.vectorResource(
-                                if (isDarkTheme) R.drawable.sun else R.drawable.moon
-                            ),
+                            imageVector = if (isDarkTheme) LocalVaultIcons.Sun else LocalVaultIcons.Moon,
                             contentDescription = stringResource(
                                 if (isDarkTheme) R.string.switch_to_light_mode else R.string.switch_to_dark_mode
                             ),
@@ -202,7 +201,7 @@ fun VaultTopAppBar(
                         ) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
-                                imageVector = ImageVector.vectorResource(R.drawable.more_vert),
+                                imageVector = LocalVaultIcons.MoreVert,
                                 contentDescription = stringResource(R.string.more_options),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )

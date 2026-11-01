@@ -75,6 +75,7 @@ import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.DarkBackground
 import com.lihan.localvault.core.presentation.ui.theme.IconsEnum
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
@@ -269,7 +270,7 @@ private fun VaultScreen(
                         contentColor = DarkBackground
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.add),
+                            imageVector = LocalVaultIcons.Add,
                             contentDescription = null
                         )
                     }
@@ -290,7 +291,7 @@ private fun VaultScreen(
                     ) {
                         Icon(
                             modifier = Modifier.size(48.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.search),
+                            imageVector = LocalVaultIcons.Search,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                         )
@@ -373,7 +374,7 @@ private fun VaultScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.fingerprint),
+                            imageVector = LocalVaultIcons.Fingerprint,
                             contentDescription = stringResource(R.string.biometric_prompt_title),
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(40.dp)
@@ -408,7 +409,7 @@ private fun VaultScreen(
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.fingerprint),
+                            imageVector = LocalVaultIcons.Fingerprint,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )

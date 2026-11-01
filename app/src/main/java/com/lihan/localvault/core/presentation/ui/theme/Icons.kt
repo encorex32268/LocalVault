@@ -1,6 +1,9 @@
 package com.lihan.localvault.core.presentation.ui.theme
 
 import androidx.annotation.DrawableRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.lihan.localvault.R
 
 enum class IconsEnum(@field:DrawableRes val resId: Int) {
@@ -39,5 +42,102 @@ enum class IconsEnum(@field:DrawableRes val resId: Int) {
     STAR(R.drawable.star),
     TOMBSTONE(R.drawable.tombstone),
     TRASH(R.drawable.trash),
+}
 
+object LocalVaultIcons {
+    val Add: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.add)
+
+    val Back: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.back)
+
+    val Camera: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.ic_camera)
+
+    val ChevronRight: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.chevron_right)
+
+    val ChevronUp: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.chevron_up)
+
+    val Close: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.x)
+
+    val X: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.x)
+
+    val Copy: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.copy)
+
+    val Document: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.ic_document)
+
+    val Edit: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.edit)
+
+    val Eye: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.eye)
+
+    val EyeOff: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.eye_off)
+
+    val Fingerprint: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.fingerprint)
+
+    val Image: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.ic_image)
+
+    val Key: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.key)
+
+    val LockKeyhole: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.lock_keyhole)
+
+    val Moon: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.moon)
+
+    val MoreVert: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.more_vert)
+
+    val Paste: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.paste)
+
+    val Save: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.save)
+
+    val Search: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.search)
+
+    val Sun: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.sun)
+
+    val Trash: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.trash)
+
+    val User: ImageVector
+        @Composable
+        get() = ImageVector.vectorResource(R.drawable.user)
 }

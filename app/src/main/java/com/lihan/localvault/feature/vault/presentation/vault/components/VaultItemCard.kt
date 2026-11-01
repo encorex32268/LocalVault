@@ -48,6 +48,7 @@ import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.component.EncryptedImagePreviewDialog
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 import com.lihan.localvault.feature.vault.presentation.create.components.AttachmentItemCard
@@ -142,7 +143,7 @@ fun VaultItemCard(
                             )
                             if (hasAttachments) {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_document),
+                                    imageVector = LocalVaultIcons.Document,
                                     contentDescription = stringResource(R.string.attachments),
                                     modifier = Modifier.size(12.dp),
                                     tint = MaterialTheme.colorScheme.outline
@@ -172,7 +173,7 @@ fun VaultItemCard(
                         )
                         if (hasAttachments) {
                             Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_document),
+                                imageVector = LocalVaultIcons.Document,
                                 contentDescription = stringResource(R.string.attachments),
                                 modifier = Modifier.size(12.dp),
                                 tint = MaterialTheme.colorScheme.outline
@@ -190,7 +191,7 @@ fun VaultItemCard(
                     ) {
                         Icon(
                             modifier = Modifier.size(18.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.edit),
+                            imageVector = LocalVaultIcons.Edit,
                             contentDescription = null,
                             tint = accentColor
                         )
@@ -204,7 +205,7 @@ fun VaultItemCard(
                     ) {
                         Icon(
                             modifier = Modifier.size(18.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.trash),
+                            imageVector = LocalVaultIcons.Trash,
                             contentDescription = null,
                             tint = accentColor
                         )

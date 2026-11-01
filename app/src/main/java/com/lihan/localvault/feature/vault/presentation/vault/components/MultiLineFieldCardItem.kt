@@ -18,6 +18,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 
 
 @Composable
@@ -48,7 +49,7 @@ fun MultiLineFieldCardItem(
                 ) {
                     Icon(
                         modifier = Modifier.size(22.dp),
-                        imageVector = ImageVector.vectorResource(R.drawable.copy),
+                        imageVector = LocalVaultIcons.Copy,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onBackground
                     )

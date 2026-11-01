@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 import com.lihan.localvault.feature.vault.presentation.model.VaultFieldUi
@@ -101,7 +102,7 @@ fun CreateVaultFieldItem(
                     ) {
                         Icon(
                             modifier = Modifier.size(16.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.chevron_up),
+                            imageVector = LocalVaultIcons.ChevronUp,
                             contentDescription = stringResource(R.string.move_up),
                             tint = MaterialTheme.colorScheme.outline
                         )
@@ -115,7 +116,7 @@ fun CreateVaultFieldItem(
                 ) {
                     Icon(
                         modifier = Modifier.size(16.dp),
-                        imageVector = ImageVector.vectorResource(R.drawable.x),
+                        imageVector = LocalVaultIcons.Close,
                         contentDescription = stringResource(R.string.delete),
                         tint = MaterialTheme.colorScheme.outline
                     )
@@ -146,9 +147,9 @@ fun CreateVaultFieldItem(
                             Icon(
                                 modifier = Modifier.size(22.dp),
                                 imageVector = if (field.isPasswordVisible) {
-                                    ImageVector.vectorResource(R.drawable.eye)
+                                    LocalVaultIcons.Eye
                                 } else {
-                                    ImageVector.vectorResource(R.drawable.eye_off)
+                                    LocalVaultIcons.EyeOff
                                 },
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onBackground
@@ -162,7 +163,7 @@ fun CreateVaultFieldItem(
                     ) {
                         Icon(
                             modifier = Modifier.size(22.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.paste),
+                            imageVector = LocalVaultIcons.Paste,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onBackground
                         )

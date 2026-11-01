@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.Primary
 
 enum class BackupPasswordMode {
@@ -85,7 +86,7 @@ fun BackupPasswordDialog(
         icon = {
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.lock_keyhole),
+                imageVector = LocalVaultIcons.LockKeyhole,
                 contentDescription = null,
                 tint = Primary
             )
@@ -160,9 +161,7 @@ fun BackupPasswordDialog(
                         IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                             Icon(
                                 modifier = Modifier.size(20.dp),
-                                imageVector = ImageVector.vectorResource(
-                                    if (isPasswordVisible) R.drawable.eye else R.drawable.eye_off
-                                ),
+                                imageVector = if (isPasswordVisible) LocalVaultIcons.Eye else LocalVaultIcons.EyeOff,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -212,9 +211,7 @@ fun BackupPasswordDialog(
                             IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
                                 Icon(
                                     modifier = Modifier.size(20.dp),
-                                    imageVector = ImageVector.vectorResource(
-                                        if (isConfirmPasswordVisible) R.drawable.eye else R.drawable.eye_off
-                                    ),
+                                    imageVector = if (isConfirmPasswordVisible) LocalVaultIcons.Eye else LocalVaultIcons.EyeOff,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

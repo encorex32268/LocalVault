@@ -19,7 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 
 @Composable
 fun EncryptedImagePreviewDialog(
@@ -57,7 +57,7 @@ fun EncryptedImagePreviewDialog(
                     .size(40.dp)
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.x),
+                    imageVector = LocalVaultIcons.Close,
                     contentDescription = "Close",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
