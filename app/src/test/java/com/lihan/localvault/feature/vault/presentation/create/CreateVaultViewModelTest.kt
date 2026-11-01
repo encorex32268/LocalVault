@@ -77,14 +77,14 @@ class CreateVaultViewModelTest {
         }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.onAction(CreateVaultAction.OnOpenAddAttachmentMenu)
+        viewModel.onAction(CreateVaultAction.OnOpenAddMenu)
         testDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertTrue(viewModel.state.value.isAddMenuOpen)
 
         viewModel.onAction(CreateVaultAction.OnTakePhotoClick)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertFalse(viewModel.state.value.isAddMenuOpen)
         assertEquals(1, emittedEvents.size)
         assertTrue(emittedEvents.first() is CreateVaultEvent.LaunchCamera)
     }
@@ -101,14 +101,14 @@ class CreateVaultViewModelTest {
         }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.onAction(CreateVaultAction.OnOpenAddAttachmentMenu)
+        viewModel.onAction(CreateVaultAction.OnOpenAddMenu)
         testDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertTrue(viewModel.state.value.isAddMenuOpen)
 
         viewModel.onAction(CreateVaultAction.OnChoosePhotoClick)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertFalse(viewModel.state.value.isAddMenuOpen)
         assertEquals(1, emittedEvents.size)
         assertTrue(emittedEvents.first() is CreateVaultEvent.LaunchPhotoPicker)
     }
@@ -125,15 +125,52 @@ class CreateVaultViewModelTest {
         }
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.onAction(CreateVaultAction.OnOpenAddAttachmentMenu)
+        viewModel.onAction(CreateVaultAction.OnOpenAddMenu)
         testDispatcher.scheduler.advanceUntilIdle()
-        assertTrue(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertTrue(viewModel.state.value.isAddMenuOpen)
 
         viewModel.onAction(CreateVaultAction.OnChooseDocumentClick)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.isAddAttachmentMenuOpen)
+        assertFalse(viewModel.state.value.isAddMenuOpen)
         assertEquals(1, emittedEvents.size)
         assertTrue(emittedEvents.first() is CreateVaultEvent.LaunchDocumentPicker)
+    }
+
+    @Test
+    fun onOpenAddMenu_setsIsAddMenuOpenToTrue() = runTest {
+        val viewModel = CreateVaultViewModel(fakeRepo, fakeDataStore, fakeFileManager)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.state.collect {}
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onAction(CreateVaultAction.OnOpenAddMenu)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.state.value.isAddMenuOpen)
+
+        viewModel.onAction(CreateVaultAction.OnDismissAddMenu)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertFalse(viewModel.state.value.isAddMenuOpen)
+    }
+
+    @Test
+    fun onAddField_addsFieldAndClosesAddMenu() = runTest {
+        val viewModel = CreateVaultViewModel(fakeRepo, fakeDataStore, fakeFileManager)
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.state.collect {}
+        }
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onAction(CreateVaultAction.OnOpenAddMenu)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertTrue(viewModel.state.value.isAddMenuOpen)
+
+        viewModel.onAction(CreateVaultAction.OnAddField(com.lihan.localvault.core.domain.FieldType.SINGLE_LINE, "Account"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.state.value.isAddMenuOpen)
+        assertEquals(1, viewModel.state.value.fields.size)
+        assertEquals("Account", viewModel.state.value.fields.first().label)
     }
 }

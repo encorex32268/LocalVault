@@ -75,4 +75,7 @@
     <string name="choose_document_desc">PDF, TXT, DOCX files</string>
     <string name="preview_image">Preview Image</string>
     <string name="include_attachments_in_backup">Include photos and document attachments</string>
+    <string name="add">Add</string>
+    <string name="add_field_desc">Account, password, and multiline note</string>
+    <string name="add_attachment_desc">Photos, images, and document files</string>
 </resources>

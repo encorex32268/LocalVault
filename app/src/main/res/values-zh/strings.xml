@@ -65,4 +65,7 @@
     <string name="error_invalid_passphrase">密碼錯誤，無法解密備份檔</string>
     <string name="error_corrupted_backup">備份檔案損毀或格式不符</string>
     <string name="error_backup_failed">備份作業失敗</string>
+    <string name="add">新增</string>
+    <string name="add_field_desc">帳號、密碼或多行備忘筆記</string>
+    <string name="add_attachment_desc">拍攝相片、相簿圖片或文件檔案</string>
 </resources>

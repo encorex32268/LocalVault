@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lihan.localvault.R
+import com.lihan.localvault.core.presentation.ui.theme.LocalVaultIcons
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.ui.theme.VaultCoralRed
 
@@ -33,6 +34,7 @@ fun CreateVaultTopAppBar(
     isLoading: Boolean,
     color: Color,
     onBackClick: () -> Unit,
+    onAddClick: () -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,13 +63,23 @@ fun CreateVaultTopAppBar(
                 onClick = onBackClick
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.back),
+                    imageVector = LocalVaultIcons.Back,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         },
         actions = {
+            IconButton(
+                shape = RoundedCornerShape(16.dp),
+                onClick = onAddClick
+            ) {
+                Icon(
+                    imageVector = LocalVaultIcons.Add,
+                    contentDescription = stringResource(R.string.add),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -82,7 +94,7 @@ fun CreateVaultTopAppBar(
                     onClick = onSaveClick
                 ) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.save),
+                        imageVector = LocalVaultIcons.Save,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onBackground
                     )
@@ -101,6 +113,7 @@ private fun CreateVaultTopAppBarPreview() {
             isLoading = false,
             color = VaultCoralRed,
             onBackClick = {},
+            onAddClick = {},
             onSaveClick = {}
         )
     }

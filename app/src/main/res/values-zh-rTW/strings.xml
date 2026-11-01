@@ -75,4 +75,7 @@
     <string name="choose_document_desc">PDF、TXT、Word 等檔案</string>
     <string name="preview_image">預覽相片</string>
     <string name="include_attachments_in_backup">包含相片與文件附件</string>
+    <string name="add">新增</string>
+    <string name="add_field_desc">帳號、密碼或多行備忘筆記</string>
+    <string name="add_attachment_desc">拍攝相片、相簿圖片或文件檔案</string>
 </resources>

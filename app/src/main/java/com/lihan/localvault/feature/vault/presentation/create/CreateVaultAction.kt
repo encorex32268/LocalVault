@@ -15,14 +15,12 @@ sealed interface CreateVaultAction {
     data class OnSelectCategory(val category: VaultCategory) : CreateVaultAction
     data object OnPasteTitle : CreateVaultAction
     data class OnPasteField(val fieldId: String) : CreateVaultAction
-    data object OnOpenAddFieldMenu : CreateVaultAction
-    data object OnDismissAddFieldMenu : CreateVaultAction
+    data object OnOpenAddMenu : CreateVaultAction
+    data object OnDismissAddMenu : CreateVaultAction
     data class OnAddField(val type: FieldType, val label: String = "") : CreateVaultAction
     data class OnRemoveField(val fieldId: String) : CreateVaultAction
     data class OnTogglePasswordVisibility(val fieldId: String) : CreateVaultAction
     data class OnMoveField(val fromIndex: Int, val toIndex: Int) : CreateVaultAction
-    data object OnOpenAddAttachmentMenu : CreateVaultAction
-    data object OnDismissAddAttachmentMenu : CreateVaultAction
     data object OnTakePhotoClick : CreateVaultAction
     data object OnChoosePhotoClick : CreateVaultAction
     data object OnChooseDocumentClick : CreateVaultAction

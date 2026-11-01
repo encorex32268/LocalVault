@@ -65,4 +65,7 @@
     <string name="error_invalid_passphrase">パスワードが正しくありません。復元できません。</string>
     <string name="error_corrupted_backup">バックアップファイルが無効または破損しています</string>
     <string name="error_backup_failed">バックアップ処理に失敗しました</string>
+    <string name="add">追加</string>
+    <string name="add_field_desc">アカウント、パスワード、メモなど</string>
+    <string name="add_attachment_desc">写真、画像、ドキュメントファイル</string>
 </resources>

@@ -78,11 +78,11 @@ class CreateVaultViewModel(
             is CreateVaultAction.OnSelectCategory -> {
                 _state.update { it.copy(category = action.category) }
             }
-            is CreateVaultAction.OnOpenAddFieldMenu -> {
-                _state.update { it.copy(isAddFieldMenuOpen = true) }
+            is CreateVaultAction.OnOpenAddMenu -> {
+                _state.update { it.copy(isAddMenuOpen = true) }
             }
-            is CreateVaultAction.OnDismissAddFieldMenu -> {
-                _state.update { it.copy(isAddFieldMenuOpen = false) }
+            is CreateVaultAction.OnDismissAddMenu -> {
+                _state.update { it.copy(isAddMenuOpen = false) }
             }
             is CreateVaultAction.OnAddField -> {
                 val newField = VaultFieldUi(
@@ -92,7 +92,7 @@ class CreateVaultViewModel(
                 _state.update {
                     it.copy(
                         fields = it.fields + newField,
-                        isAddFieldMenuOpen = false
+                        isAddMenuOpen = false
                     )
                 }
             }
@@ -128,33 +128,27 @@ class CreateVaultViewModel(
                     }
                 }
             }
-            is CreateVaultAction.OnOpenAddAttachmentMenu -> {
-                _state.update { it.copy(isAddAttachmentMenuOpen = true) }
-            }
-            is CreateVaultAction.OnDismissAddAttachmentMenu -> {
-                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
-            }
             is CreateVaultAction.OnTakePhotoClick -> {
-                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                _state.update { it.copy(isAddMenuOpen = false) }
                 val (uri, tempFile) = encryptedFileManager.createCameraTempUri()
                 viewModelScope.launch {
                     _events.send(CreateVaultEvent.LaunchCamera(uri, tempFile))
                 }
             }
             is CreateVaultAction.OnChoosePhotoClick -> {
-                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                _state.update { it.copy(isAddMenuOpen = false) }
                 viewModelScope.launch {
                     _events.send(CreateVaultEvent.LaunchPhotoPicker)
                 }
             }
             is CreateVaultAction.OnChooseDocumentClick -> {
-                _state.update { it.copy(isAddAttachmentMenuOpen = false) }
+                _state.update { it.copy(isAddMenuOpen = false) }
                 viewModelScope.launch {
                     _events.send(CreateVaultEvent.LaunchDocumentPicker)
                 }
             }
             is CreateVaultAction.OnFileSelected -> {
-                _state.update { it.copy(isProcessingAttachment = true, isAddAttachmentMenuOpen = false) }
+                _state.update { it.copy(isProcessingAttachment = true) }
                 viewModelScope.launch{
                     try {
                         when (val result = encryptedFileManager.saveEncryptedFile(action.uri)) {

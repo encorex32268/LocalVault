@@ -18,8 +18,7 @@ data class CreateVaultState(
     val color: Color = VaultColors.first(),
     val iconIndex: Int = 0,
     val isIconPickerOpen: Boolean = false,
-    val isAddFieldMenuOpen: Boolean = false,
-    val isAddAttachmentMenuOpen: Boolean = false,
+    val isAddMenuOpen: Boolean = false,
     val isProcessingAttachment: Boolean = false
 ) {
     val iconResId: Int

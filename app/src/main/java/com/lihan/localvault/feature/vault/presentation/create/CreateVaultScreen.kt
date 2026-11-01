@@ -10,12 +10,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
@@ -43,10 +41,7 @@ import com.lihan.localvault.R
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
 import com.lihan.localvault.core.presentation.util.ObserveAsEvents
-import com.lihan.localvault.feature.vault.presentation.create.components.AddAttachmentBottomSheet
-import com.lihan.localvault.feature.vault.presentation.create.components.AddAttachmentButton
-import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldBottomSheet
-import com.lihan.localvault.feature.vault.presentation.create.components.AddFieldButton
+import com.lihan.localvault.feature.vault.presentation.create.components.AddEntryBottomSheet
 import com.lihan.localvault.feature.vault.presentation.create.components.AttachmentSection
 import com.lihan.localvault.feature.vault.presentation.create.components.CreateVaultFieldItem
 import com.lihan.localvault.feature.vault.presentation.create.components.CreateVaultTopAppBar
@@ -179,6 +174,10 @@ private fun CreateVaultScreen(
                 isLoading = state.isLoading,
                 color = state.color,
                 onBackClick = { onAction(CreateVaultAction.OnBackClick) },
+                onAddClick = {
+                    focusManager.clearFocus(true)
+                    onAction(CreateVaultAction.OnOpenAddMenu)
+                },
                 onSaveClick = { onAction(CreateVaultAction.OnSaveClick) }
             )
         },
@@ -237,28 +236,6 @@ private fun CreateVaultScreen(
                 )
             }
 
-            item(key = "action_buttons_row") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    AddFieldButton(
-                        onClick = {
-                            focusManager.clearFocus(true)
-                            onAction(CreateVaultAction.OnOpenAddFieldMenu)
-                        },
-                        modifier = Modifier.weight(7f)
-                    )
-                    AddAttachmentButton(
-                        onClick = {
-                            focusManager.clearFocus(true)
-                            onAction(CreateVaultAction.OnOpenAddAttachmentMenu)
-                        },
-                        modifier = Modifier.weight(3f)
-                    )
-                }
-            }
-
             item(key = "attachment_section") {
                 AttachmentSection(
                     attachments = state.attachments,
@@ -275,14 +252,14 @@ private fun CreateVaultScreen(
         }
     }
 
-    if (state.isAddFieldMenuOpen) {
+    if (state.isAddMenuOpen) {
         val singleLineAccount = stringResource(R.string.account)
         val singleLineOtherInput = stringResource(R.string.single_line_input)
         val password = stringResource(R.string.password)
         val multiLine = stringResource(R.string.note)
 
-        AddFieldBottomSheet(
-            onDismiss = { onAction(CreateVaultAction.OnDismissAddFieldMenu) },
+        AddEntryBottomSheet(
+            onDismiss = { onAction(CreateVaultAction.OnDismissAddMenu) },
             onAddField = { fieldType ->
                 val label = when (fieldType) {
                     FieldType.SINGLE_LINE -> if (state.fields.none { it.type == FieldType.SINGLE_LINE }) {
@@ -294,7 +271,8 @@ private fun CreateVaultScreen(
                     FieldType.MULTI_LINE -> multiLine
                 }
                 onAction(CreateVaultAction.OnAddField(fieldType, label))
-            }
+            },
+            onAction = onAction
         )
     }
 
@@ -308,12 +286,6 @@ private fun CreateVaultScreen(
             onDismiss = { onAction(CreateVaultAction.OnDismissIconPicker) }
         )
     }
-
-    if (state.isAddAttachmentMenuOpen) {
-        AddAttachmentBottomSheet(
-            onAction = onAction
-        )
-    }
 }
 
 @Preview(showBackground = true)
@@ -325,7 +297,8 @@ private fun CreateVaultScreenPreview() {
                 fields = listOf(
                     VaultFieldUi(type = FieldType.SINGLE_LINE, label = "帳號"),
                     VaultFieldUi(type = FieldType.PASSWORD, label = "密碼")
-                )
+                ),
+                isAddMenuOpen = true
             ),
             onAction = {}
         )
