@@ -6,7 +6,7 @@ import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.EmptyResult
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.storage.FakeEncryptedFileManager
+import com.lihan.localvault.core.data.security.storage.FakeEncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

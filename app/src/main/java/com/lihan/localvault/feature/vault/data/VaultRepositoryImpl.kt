@@ -1,11 +1,11 @@
 package com.lihan.localvault.feature.vault.data
 
-import com.lihan.localvault.core.backup.BackupCryptoManager
-import com.lihan.localvault.core.backup.model.BackupEnvelope
-import com.lihan.localvault.core.backup.model.VaultBackupAttachment
-import com.lihan.localvault.core.backup.model.VaultBackupField
-import com.lihan.localvault.core.backup.model.VaultBackupItem
-import com.lihan.localvault.core.backup.model.VaultBackupPayload
+import com.lihan.localvault.core.domain.security.backup.BackupCryptoManager
+import com.lihan.localvault.core.domain.security.backup.BackupEnvelope
+import com.lihan.localvault.core.domain.security.backup.VaultBackupAttachment
+import com.lihan.localvault.core.domain.security.backup.VaultBackupField
+import com.lihan.localvault.core.domain.security.backup.VaultBackupItem
+import com.lihan.localvault.core.domain.security.backup.VaultBackupPayload
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
 import com.lihan.localvault.core.domain.VaultCategory
@@ -15,7 +15,7 @@ import com.lihan.localvault.core.domain.VaultLocalDataSource
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.EmptyResult
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.storage.EncryptedFileManager
+import com.lihan.localvault.core.domain.security.storage.EncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json

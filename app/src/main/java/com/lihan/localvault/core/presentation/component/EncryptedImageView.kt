@@ -12,7 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.storage.EncryptedFileManager
+import com.lihan.localvault.core.domain.security.storage.EncryptedFileManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject

@@ -67,11 +67,10 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.localvault.R
-import com.lihan.localvault.core.biometric.BiometricPromptManager
-import com.lihan.localvault.core.biometric.BiometricResult
+import com.lihan.localvault.core.presentation.util.biometric.BiometricPromptManager
+import com.lihan.localvault.core.presentation.util.biometric.BiometricResult
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.presentation.ui.theme.DarkBackground

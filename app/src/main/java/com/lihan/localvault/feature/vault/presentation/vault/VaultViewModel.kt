@@ -3,12 +3,12 @@ package com.lihan.localvault.feature.vault.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lihan.localvault.R
-import com.lihan.localvault.core.biometric.BiometricAvailability
-import com.lihan.localvault.core.biometric.BiometricPromptManager
+import com.lihan.localvault.core.presentation.util.biometric.BiometricAvailability
+import com.lihan.localvault.core.presentation.util.biometric.BiometricPromptManager
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.session.SessionManager
+import com.lihan.localvault.core.domain.session.SessionManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultUi

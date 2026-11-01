@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.exifinterface)
     implementation(libs.androidx.security.crypto)
     implementation(libs.coil.compose)
     ksp(libs.room.compiler)

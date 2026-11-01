@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.presentation.ui.theme.LocalVaultTheme
-import com.lihan.localvault.core.session.SessionManager
+import com.lihan.localvault.core.domain.session.SessionManager
 import com.lihan.localvault.navigation.NavigationRoot
 import org.koin.android.ext.android.inject
 

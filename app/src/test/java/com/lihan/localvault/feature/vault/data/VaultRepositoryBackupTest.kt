@@ -1,9 +1,8 @@
 package com.lihan.localvault.feature.vault.data
 
-import com.lihan.localvault.core.backup.BackupCryptoManager
+import com.lihan.localvault.core.domain.security.backup.BackupCryptoManager
 import com.lihan.localvault.core.domain.FieldType
 import com.lihan.localvault.core.domain.Vault
-import com.lihan.localvault.core.domain.VaultAttachment
 import com.lihan.localvault.core.domain.VaultCategory
 import com.lihan.localvault.core.domain.VaultContent
 import com.lihan.localvault.core.domain.VaultField
@@ -11,7 +10,7 @@ import com.lihan.localvault.core.domain.VaultLocalDataSource
 import com.lihan.localvault.core.domain.util.DataError
 import com.lihan.localvault.core.domain.util.EmptyResult
 import com.lihan.localvault.core.domain.util.Result
-import com.lihan.localvault.core.storage.FakeEncryptedFileManager
+import com.lihan.localvault.core.data.security.storage.FakeEncryptedFileManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking

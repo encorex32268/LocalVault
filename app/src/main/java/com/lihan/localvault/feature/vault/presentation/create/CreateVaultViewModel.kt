@@ -16,7 +16,7 @@ import com.lihan.localvault.core.domain.VaultField
 import com.lihan.localvault.core.domain.datastore.AppDataStore
 import com.lihan.localvault.core.domain.util.Result
 import com.lihan.localvault.core.presentation.ui.theme.VaultColors
-import com.lihan.localvault.core.storage.EncryptedFileManager
+import com.lihan.localvault.core.domain.security.storage.EncryptedFileManager
 import com.lihan.localvault.feature.vault.domain.VaultRepository
 import com.lihan.localvault.feature.vault.presentation.mapper.toUi
 import com.lihan.localvault.feature.vault.presentation.model.VaultAttachmentUi

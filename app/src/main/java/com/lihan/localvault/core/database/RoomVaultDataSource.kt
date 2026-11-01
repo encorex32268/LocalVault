@@ -1,7 +1,7 @@
 package com.lihan.localvault.core.database
 
 import android.database.sqlite.SQLiteFullException
-import com.lihan.localvault.core.crypto.CryptoManager
+import com.lihan.localvault.core.domain.security.crypto.CryptoManager
 import com.lihan.localvault.core.database.dao.VaultDao
 import com.lihan.localvault.core.database.mapper.toJsonString
 import com.lihan.localvault.core.database.mapper.toVault

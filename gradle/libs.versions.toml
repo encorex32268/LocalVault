@@ -21,6 +21,7 @@ androidxCoreSplashScreen = "1.0.1"
 securityCrypto = "1.1.0-alpha06"
 coil = "2.7.0"
 kotlinxCoroutines = "1.10.1"
+exifinterface = "1.3.6"
 [libraries]
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
@@ -53,6 +54,7 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
