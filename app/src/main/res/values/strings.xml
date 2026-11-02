@@ -53,8 +53,8 @@
     <string name="export_backup_desc">Set a 4 to 6-digit password to encrypt your backup. This password will be required when restoring. Please remember it!</string>
     <string name="import_backup_title">Enter Backup Password</string>
     <string name="import_backup_desc">Enter the 4 to 6-digit password set during backup to decrypt and restore your vaults.</string>
-    <string name="backup_password_label">Password (4-6 digits)</string>
-    <string name="backup_password_placeholder">Enter 4-6 digit password</string>
+    <string name="backup_password_label">Password (4–6 digits)</string>
+    <string name="backup_password_placeholder">Enter 4–6 digit password</string>
     <string name="confirm_backup_password_label">Confirm Password</string>
     <string name="confirm_backup_password_placeholder">Re-enter password</string>
     <string name="error_passwords_do_not_match">Passwords do not match</string>

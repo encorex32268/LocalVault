@@ -68,4 +68,14 @@
     <string name="add">追加</string>
     <string name="add_field_desc">アカウント、パスワード、メモなど</string>
     <string name="add_attachment_desc">写真、画像、ドキュメントファイル</string>
+    <string name="attachments">添付ファイル</string>
+    <string name="add_attachment">添付ファイルを追加</string>
+    <string name="take_photo">写真を撮影</string>
+    <string name="take_photo_desc">カメラで撮影して暗号化保存</string>
+    <string name="choose_image">アルバムから選択</string>
+    <string name="choose_image_desc">写真を選択して暗号化保存</string>
+    <string name="choose_document">ファイルをインポート</string>
+    <string name="choose_document_desc">PDF、TXT、Word などのファイル</string>
+    <string name="preview_image">プレビュー</string>
+    <string name="include_attachments_in_backup">写真やドキュメントなどの添付ファイルを含める</string>
 </resources>

@@ -53,8 +53,8 @@
     <string name="export_backup_desc">请设置 4 到 6 位密码以加密备份文件。还原时必须使用此密码，请务必牢记！</string>
     <string name="import_backup_title">输入备份密码</string>
     <string name="import_backup_desc">请输入备份时设置的 4 到 6 位密码以解密并还原数据。</string>
-    <string name="backup_password_label">密码 (4-6 位数)</string>
-    <string name="backup_password_placeholder">请输入 4-6 位密码</string>
+    <string name="backup_password_label">密码 (4–6 位数)</string>
+    <string name="backup_password_placeholder">请输入 4–6 位密码</string>
     <string name="confirm_backup_password_label">确认密码</string>
     <string name="confirm_backup_password_placeholder">请再次输入密码</string>
     <string name="error_passwords_do_not_match">两次输入的密码不一致</string>
@@ -68,4 +68,14 @@
     <string name="add">新增</string>
     <string name="add_field_desc">账号、密码或多行备忘笔记</string>
     <string name="add_attachment_desc">拍摄照片、相册图片或文件</string>
+    <string name="attachments">附件</string>
+    <string name="add_attachment">添加附件</string>
+    <string name="take_photo">拍摄照片</string>
+    <string name="take_photo_desc">使用相机拍照并加密保存</string>
+    <string name="choose_image">从相册选择</string>
+    <string name="choose_image_desc">选择照片并加密保存</string>
+    <string name="choose_document">导入文档</string>
+    <string name="choose_document_desc">PDF、TXT、Word 等文件</string>
+    <string name="preview_image">预览照片</string>
+    <string name="include_attachments_in_backup">包含照片与文档附件</string>
 </resources>
