@@ -55,3 +55,6 @@ Thumbs.db
 
 # Kotlin
 .kotlin/
+
+# Local demo video recordings
+*.mp4
