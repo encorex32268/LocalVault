@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="screenshots/tw/feature_graphic_zh_1024x500.png" width="100%" alt="LocalVault 功能橫幅" />
+  <img src="screenshots/tw/feature_graphic_zh_1024x500.webp" width="100%" alt="LocalVault 功能橫幅" />
 </p>
 
 ## 專案簡介
@@ -49,7 +49,7 @@
 
 | 保險庫清單 | 展開詳細資訊 | 新增與編輯 | 自訂圖示與色彩 | 即時快速搜尋 |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%201.png" width="175" alt="保險庫清單" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%202.png" width="175" alt="展開詳細資訊" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%203.png" width="175" alt="新增與編輯" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%204.png" width="175" alt="自訂圖示與色彩" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%205.png" width="175" alt="即時快速搜尋" /> |
+| <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%201.webp" width="175" alt="保險庫清單" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%202.webp" width="175" alt="展開詳細資訊" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%203.webp" width="175" alt="新增與編輯" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%204.webp" width="175" alt="自訂圖示與色彩" /> | <img src="screenshots/tw/Google%20Pixel%2010%20Screenshot%205.webp" width="175" alt="即時快速搜尋" /> |
 
 ---
 

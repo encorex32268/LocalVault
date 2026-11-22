@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="screenshots/en/feature_graphic_en_1024x500.png" width="100%" alt="LocalVault Feature Graphic" />
+  <img src="screenshots/en/feature_graphic_en_1024x500.webp" width="100%" alt="LocalVault Feature Graphic" />
 </p>
 
 ## Overview
@@ -49,7 +49,7 @@
 
 | Vault List | Expanded Details | Create / Edit | Icon & Color Picker | Instant Search |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%201.png" width="175" alt="Vault List" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%202.png" width="175" alt="Expanded Details" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%203.png" width="175" alt="Create Vault" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%204.png" width="175" alt="Custom Icon & Color" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%205.png" width="175" alt="Instant Search" /> |
+| <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%201.webp" width="175" alt="Vault List" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%202.webp" width="175" alt="Expanded Details" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%203.webp" width="175" alt="Create Vault" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%204.webp" width="175" alt="Custom Icon & Color" /> | <img src="screenshots/en/Google%20Pixel%2010%20Screenshot%205.webp" width="175" alt="Instant Search" /> |
 
 ---
 

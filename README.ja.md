@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="screenshots/jp/feature_graphic_ja_1024x500.png" width="100%" alt="LocalVault フィーチャーグラフィック" />
+  <img src="screenshots/jp/feature_graphic_ja_1024x500.webp" width="100%" alt="LocalVault フィーチャーグラフィック" />
 </p>
 
 ## 概要
@@ -49,7 +49,7 @@
 
 | 保管庫一覧 | 詳細表示 | 作成・編集 | アイコン＆カラー設定 | インスタント検索 |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%201.png" width="175" alt="保管庫一覧" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%202.png" width="175" alt="詳細表示" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%203.png" width="175" alt="作成・編集" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%204.png" width="175" alt="アイコン＆カラー設定" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%205.png" width="175" alt="インスタント検索" /> |
+| <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%201.webp" width="175" alt="保管庫一覧" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%202.webp" width="175" alt="詳細表示" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%203.webp" width="175" alt="作成・編集" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%204.webp" width="175" alt="アイコン＆カラー設定" /> | <img src="screenshots/jp/Google%20Pixel%2010%20Screenshot%205.webp" width="175" alt="インスタント検索" /> |
 
 ---
 
